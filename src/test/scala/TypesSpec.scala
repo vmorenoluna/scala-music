@@ -27,7 +27,7 @@ class TypesSpec extends UnitSpec {
     }
   }
 
-  " pitch.toAbsPitch.toPitch" should "return the original pitch" in {
+  "pitch.toAbsPitch.toPitch" should "return the original pitch" in {
     forAll(pitchGen) { pitch =>
       pitch
         .toAbsPitch
@@ -58,6 +58,20 @@ class TypesSpec extends UnitSpec {
     pitchOrder.compare(pitch, (A,4)) shouldEqual -1
     pitchOrder.compare(pitch, (B,4)) shouldEqual -1
     pitchOrder.compare(pitch, (C,5)) shouldEqual -1
+  }
+
+  "pitch.transpose" should "correctly transpose a pitch by the given amount of half steps" in {
+    val pitch: Pitch = (C, 4)
+
+    pitch.transpose(4) shouldEqual (E,4)
+    pitch.transpose(-3) shouldEqual (A,3)
+  }
+
+  "pitch.max(p)" should "correctly the maximum pitch among the two pitches" in {
+    val pitch: Pitch = (C, 4)
+
+    pitch max (D, 5) shouldEqual (D,5)
+    pitch max (G, 3) shouldEqual pitch
   }
 
 }

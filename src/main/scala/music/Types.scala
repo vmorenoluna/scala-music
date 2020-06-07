@@ -121,6 +121,24 @@ object Types {
 
   def ws(): Step = 2
 
+  /**
+   * Transpose a pitch by the given amount of half steps
+   *
+   * @param value number of half steps
+   * @param p the pitch to transpose
+   * @return
+   */
+  def transpose(value: Step, p: Pitch): Pitch = pitch(absPitch(p) + value)
+
+  /**
+   * Return the maximum among two given pitches
+   *
+   * @param p1 the first pitch
+   * @param p2 the second pitch
+   * @return
+   */
+  def max(p1: Pitch, p2: Pitch): Pitch = if (absPitch(p1) > absPitch(p2)) p1 else p2
+
   final implicit class PitchOps(private val p: Pitch) {
     /**
      * Convert this Pitch to its equivalent AbsPitch.
@@ -132,6 +150,22 @@ object Types {
      * @return
      */
     def toAbsPitch(): AbsPitch = absPitch(p)
+
+    /**
+     * Transpose this pitch by the given amount of half steps
+     *
+     * @param value number of half steps
+     * @return
+     */
+    def transpose(value: Step): Pitch = pitch(absPitch(p) + value)
+
+    /**
+     * Return the maximum among this pitch and another given pitch
+     *
+     * @param pi the pitch to compare with
+     * @return
+     */
+    def max(pi: Pitch): Pitch = if (absPitch(p) > absPitch(pi)) p else pi
   }
 
   final implicit class AbsPitchOps(private val ap: AbsPitch) {
