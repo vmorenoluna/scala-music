@@ -25,6 +25,9 @@ object Types {
   type LazyDur = LazyList[Duration]
   val LazyNil = LazyList.empty
 
+  val hs: Step = 1
+  val ws: Step = 2
+
   /**
    * Enumerates all the available pitch class in an octave
    */
@@ -116,10 +119,6 @@ object Types {
     val pitchClass = List(C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B)(n)
     (pitchClass, oct - 1)
   }
-
-  def hs(): Step = 1
-
-  def ws(): Step = 2
 
   /**
    * Transpose a pitch by the given amount of half steps
