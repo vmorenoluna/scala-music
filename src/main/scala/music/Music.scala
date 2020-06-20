@@ -9,7 +9,7 @@ import spire.math.Rational
 import spire.math.Rational.zero
 
 import scala.collection.immutable.LazyList.#::
-import scala.math.{abs, max, min}
+import scala.math.{max, min}
 
 /**
  * The Primitive data type.
@@ -117,7 +117,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def note[A](d: Duration, features: A): Music[A] = Prim(Note(d, features))
+  def note[A](d: Duration, features: A): Prim[A] = Prim(Note(d, features))
 
   /**
    * A handy method to create a rest of type `A` with a specific duration.
@@ -125,7 +125,7 @@ object Music {
    * @param d the duration of the rest
    * @return
    */
-  def rest[A](d: Duration): Music[A] = Prim(Rest(d))
+  def rest[A](d: Duration): Prim[A] = Prim(Rest(d))
 
   /**
    * Scale the tempo of a Music of type `A` by a given factor.
@@ -187,7 +187,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def cff(o: Octave, d: Duration): Music[Pitch] = note(d, (Cff, o))
+  def cff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Cff, o))
 
   /**
    * Create a note of PitchClass Cf in the given octave and with
@@ -198,7 +198,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def cf(o: Octave, d: Duration): Music[Pitch] = note(d, (Cf, o))
+  def cf(o: Octave, d: Duration): Prim[Pitch] = note(d, (Cf, o))
 
   /**
    * Create a note of PitchClass C in the given octave and with
@@ -209,7 +209,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def c(o: Octave, d: Duration): Music[Pitch] = note(d, (C, o))
+  def c(o: Octave, d: Duration): Prim[Pitch] = note(d, (C, o))
 
   /**
    * Create a note of PitchClass Cs in the given octave and with
@@ -220,7 +220,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def cs(o: Octave, d: Duration): Music[Pitch] = note(d, (Cs, o))
+  def cs(o: Octave, d: Duration): Prim[Pitch] = note(d, (Cs, o))
 
   /**
    * Create a note of PitchClass Css in the given octave and with
@@ -231,7 +231,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def css(o: Octave, d: Duration): Music[Pitch] = note(d, (Css, o))
+  def css(o: Octave, d: Duration): Prim[Pitch] = note(d, (Css, o))
 
   /**
    * Create a note of PitchClass Dff in the given octave and with
@@ -242,7 +242,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def dff(o: Octave, d: Duration): Music[Pitch] = note(d, (Dff, o))
+  def dff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Dff, o))
 
   /**
    * Create a note of PitchClass Df in the given octave and with
@@ -253,7 +253,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def df(o: Octave, d: Duration): Music[Pitch] = note(d, (Df, o))
+  def df(o: Octave, d: Duration): Prim[Pitch] = note(d, (Df, o))
 
   /**
    * Create a note of PitchClass D in the given octave and with
@@ -264,7 +264,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def d(o: Octave, d: Duration): Music[Pitch] = note(d, (D, o))
+  def d(o: Octave, d: Duration): Prim[Pitch] = note(d, (D, o))
 
   /**
    * Create a note of PitchClass Ds in the given octave and with
@@ -275,7 +275,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def ds(o: Octave, d: Duration): Music[Pitch] = note(d, (Ds, o))
+  def ds(o: Octave, d: Duration): Prim[Pitch] = note(d, (Ds, o))
 
   /**
    * Create a note of PitchClass Dss in the given octave and with
@@ -286,7 +286,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def dss(o: Octave, d: Duration): Music[Pitch] = note(d, (Dss, o))
+  def dss(o: Octave, d: Duration): Prim[Pitch] = note(d, (Dss, o))
 
   /**
    * Create a note of PitchClass Eff in the given octave and with
@@ -297,7 +297,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def eff(o: Octave, d: Duration): Music[Pitch] = note(d, (Eff, o))
+  def eff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Eff, o))
 
   /**
    * Create a note of PitchClass Ef in the given octave and with
@@ -308,7 +308,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def ef(o: Octave, d: Duration): Music[Pitch] = note(d, (Ef, o))
+  def ef(o: Octave, d: Duration): Prim[Pitch] = note(d, (Ef, o))
 
   /**
    * Create a note of PitchClass E in the given octave and with
@@ -319,7 +319,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def e(o: Octave, d: Duration): Music[Pitch] = note(d, (E, o))
+  def e(o: Octave, d: Duration): Prim[Pitch] = note(d, (E, o))
 
   /**
    * Create a note of PitchClass Es in the given octave and with
@@ -330,7 +330,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def es(o: Octave, d: Duration): Music[Pitch] = note(d, (Es, o))
+  def es(o: Octave, d: Duration): Prim[Pitch] = note(d, (Es, o))
 
   /**
    * Create a note of PitchClass Ess in the given octave and with
@@ -341,7 +341,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def ess(o: Octave, d: Duration): Music[Pitch] = note(d, (Ess, o))
+  def ess(o: Octave, d: Duration): Prim[Pitch] = note(d, (Ess, o))
 
   /**
    * Create a note of PitchClass Fff in the given octave and with
@@ -352,7 +352,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def fff(o: Octave, d: Duration): Music[Pitch] = note(d, (Fff, o))
+  def fff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Fff, o))
 
   /**
    * Create a note of PitchClass Ff in the given octave and with
@@ -363,7 +363,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def ff(o: Octave, d: Duration): Music[Pitch] = note(d, (Ff, o))
+  def ff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Ff, o))
 
   /**
    * Create a note of PitchClass F in the given octave and with
@@ -374,7 +374,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def f(o: Octave, d: Duration): Music[Pitch] = note(d, (F, o))
+  def f(o: Octave, d: Duration): Prim[Pitch] = note(d, (F, o))
 
   /**
    * Create a note of PitchClass Fs in the given octave and with
@@ -385,7 +385,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def fs(o: Octave, d: Duration): Music[Pitch] = note(d, (Fs, o))
+  def fs(o: Octave, d: Duration): Prim[Pitch] = note(d, (Fs, o))
 
   /**
    * Create a note of PitchClass Fss in the given octave and with
@@ -396,7 +396,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def fss(o: Octave, d: Duration): Music[Pitch] = note(d, (Fss, o))
+  def fss(o: Octave, d: Duration): Prim[Pitch] = note(d, (Fss, o))
 
   /**
    * Create a note of PitchClass Gff in the given octave and with
@@ -407,7 +407,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def gff(o: Octave, d: Duration): Music[Pitch] = note(d, (Gff, o))
+  def gff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Gff, o))
 
   /**
    * Create a note of PitchClass Gf in the given octave and with
@@ -418,7 +418,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def gf(o: Octave, d: Duration): Music[Pitch] = note(d, (Gf, o))
+  def gf(o: Octave, d: Duration): Prim[Pitch] = note(d, (Gf, o))
 
   /**
    * Create a note of PitchClass G in the given octave and with
@@ -429,7 +429,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def g(o: Octave, d: Duration): Music[Pitch] = note(d, (G, o))
+  def g(o: Octave, d: Duration): Prim[Pitch] = note(d, (G, o))
 
   /**
    * Create a note of PitchClass Gs in the given octave and with
@@ -440,7 +440,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def gs(o: Octave, d: Duration): Music[Pitch] = note(d, (Gs, o))
+  def gs(o: Octave, d: Duration): Prim[Pitch] = note(d, (Gs, o))
 
   /**
    * Create a note of PitchClass Gss in the given octave and with
@@ -451,7 +451,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def gss(o: Octave, d: Duration): Music[Pitch] = note(d, (Gss, o))
+  def gss(o: Octave, d: Duration): Prim[Pitch] = note(d, (Gss, o))
 
   /**
    * Create a note of PitchClass Aff in the given octave and with
@@ -462,7 +462,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def aff(o: Octave, d: Duration): Music[Pitch] = note(d, (Aff, o))
+  def aff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Aff, o))
 
   /**
    * Create a note of PitchClass Af in the given octave and with
@@ -473,7 +473,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def af(o: Octave, d: Duration): Music[Pitch] = note(d, (Af, o))
+  def af(o: Octave, d: Duration): Prim[Pitch] = note(d, (Af, o))
 
   /**
    * Create a note of PitchClass A in the given octave and with
@@ -484,7 +484,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def a(o: Octave, d: Duration): Music[Pitch] = note(d, (A, o))
+  def a(o: Octave, d: Duration): Prim[Pitch] = note(d, (A, o))
 
   /**
    * Create a note of PitchClass As in the given octave and with
@@ -495,7 +495,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def as(o: Octave, d: Duration): Music[Pitch] = note(d, (As, o))
+  def as(o: Octave, d: Duration): Prim[Pitch] = note(d, (As, o))
 
   /**
    * Create a note of PitchClass Ass in the given octave and with
@@ -506,7 +506,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def ass(o: Octave, d: Duration): Music[Pitch] = note(d, (Ass, o))
+  def ass(o: Octave, d: Duration): Prim[Pitch] = note(d, (Ass, o))
 
   /**
    * Create a note of PitchClass Bff in the given octave and with
@@ -517,7 +517,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def bff(o: Octave, d: Duration): Music[Pitch] = note(d, (Bff, o))
+  def bff(o: Octave, d: Duration): Prim[Pitch] = note(d, (Bff, o))
 
   /**
    * Create a note of PitchClass Bf in the given octave and with
@@ -528,7 +528,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def bf(o: Octave, d: Duration): Music[Pitch] = note(d, (Bf, o))
+  def bf(o: Octave, d: Duration): Prim[Pitch] = note(d, (Bf, o))
 
   /**
    * Create a note of PitchClass B in the given octave and with
@@ -539,7 +539,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def b(o: Octave, d: Duration): Music[Pitch] = note(d, (B, o))
+  def b(o: Octave, d: Duration): Prim[Pitch] = note(d, (B, o))
 
   /**
    * Create a note of PitchClass Bs in the given octave and with
@@ -550,7 +550,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def bs(o: Octave, d: Duration): Music[Pitch] = note(d, (Bs, o))
+  def bs(o: Octave, d: Duration): Prim[Pitch] = note(d, (Bs, o))
 
   /**
    * Create a note of PitchClass Bss in the given octave and with
@@ -561,7 +561,7 @@ object Music {
    * @param d the duration
    * @return
    */
-  def bss(o: Octave, d: Duration): Music[Pitch] = note(d, (Bss, o))
+  def bss(o: Octave, d: Duration): Prim[Pitch] = note(d, (Bss, o))
 
   val bn: Duration = 2
   val wn: Duration = 1
@@ -581,39 +581,39 @@ object Music {
   val ddqn: Duration = Rational(7) / 16
   val dden: Duration = Rational(7) / 32
 
-  def bnr: Music[Pitch] = rest(bn)
+  def bnr: Prim[Pitch] = rest(bn)
 
-  def wnr: Music[Pitch] = rest(wn)
+  def wnr: Prim[Pitch] = rest(wn)
 
-  def hnr: Music[Pitch] = rest(hn)
+  def hnr: Prim[Pitch] = rest(hn)
 
-  def qnr: Music[Pitch] = rest(qn)
+  def qnr: Prim[Pitch] = rest(qn)
 
-  def enr: Music[Pitch] = rest(en)
+  def enr: Prim[Pitch] = rest(en)
 
-  def snr: Music[Pitch] = rest(sn)
+  def snr: Prim[Pitch] = rest(sn)
 
-  def tnr: Music[Pitch] = rest(tn)
+  def tnr: Prim[Pitch] = rest(tn)
 
-  def sfnr: Music[Pitch] = rest(sfn)
+  def sfnr: Prim[Pitch] = rest(sfn)
 
-  def dwnr: Music[Pitch] = rest(dwn)
+  def dwnr: Prim[Pitch] = rest(dwn)
 
-  def dhnr: Music[Pitch] = rest(dhn)
+  def dhnr: Prim[Pitch] = rest(dhn)
 
-  def dqnr: Music[Pitch] = rest(dqn)
+  def dqnr: Prim[Pitch] = rest(dqn)
 
-  def denr: Music[Pitch] = rest(den)
+  def denr: Prim[Pitch] = rest(den)
 
-  def dsnr: Music[Pitch] = rest(dsn)
+  def dsnr: Prim[Pitch] = rest(dsn)
 
-  def dtnr: Music[Pitch] = rest(dtn)
+  def dtnr: Prim[Pitch] = rest(dtn)
 
-  def ddhnr: Music[Pitch] = rest(ddhn)
+  def ddhnr: Prim[Pitch] = rest(ddhn)
 
-  def ddqnr: Music[Pitch] = rest(ddqn)
+  def ddqnr: Prim[Pitch] = rest(ddqn)
 
-  def ddenr: Music[Pitch] = rest(dden)
+  def ddenr: Prim[Pitch] = rest(dden)
 
   /**
    * Sequentially compose a list of Musics
@@ -622,7 +622,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def line[A](notes: List[Music[A]]): Music[A] = notes.foldRight(rest[A](0))(_ :+: _)
+  def line[A](notes: List[Prim[A]]): Music[A] = notes.foldRight(rest(0).asInstanceOf[Music[A]])(_ :+: _)
 
   /**
    * Parallelly compose a list of Musics
@@ -631,7 +631,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def chord[A](notes: List[Music[A]]): Music[A] = notes.foldRight(rest[A](0))(_ :=: _)
+  def chord[A](notes: List[Music[A]]): Music[A] = notes.foldRight(rest(0).asInstanceOf[Music[A]])(_ :=: _)
 
   /**
    * Get the highest Pitch from a list of Pitch
@@ -665,7 +665,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def fuse[A](ds: List[Duration], notes: List[Duration => Music[A]]): List[Music[A]] =
+  def fuse[A](ds: List[Duration], notes: List[Duration => Prim[A]]): List[Music[A]] =
     ds zip notes map { case (a, b) => b(a) }
 
   /**
@@ -690,7 +690,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def addDuration[A](d: Duration, notes: List[Duration => Music[A]]): Music[A] =
+  def addDuration[A](d: Duration, notes: List[Duration => Prim[A]]): Music[A] =
     line(notes.map(note => note(d)))
 
   /**
@@ -701,7 +701,7 @@ object Music {
    * @param n    the main note
    * @return
    */
-  def graceNote(step: Step, n: Music[Pitch]): Music[Pitch] = n match {
+  def graceNote(step: Step, n: Prim[Pitch]): Music[Pitch] = n match {
     case Prim(Note(d, p: Pitch)) => note(d / 8, p.transpose(step)) :+: note(7 * d / 8, p)
     case _ => n
   }
@@ -717,7 +717,7 @@ object Music {
    * @param n        the main note
    * @return
    */
-  def graceNoteFraction(step: Step, fraction: Rational, n: Music[Pitch]): Music[Pitch] = (step, fraction, n) match {
+  def graceNoteFraction(step: Step, fraction: Rational, n: Prim[Pitch]): Music[Pitch] = (step, fraction, n) match {
     case (n, r, Prim(Note(d, p: Pitch))) => note(r * d, p.transpose(n)) :+: note((1 - r) * d, p)
     case _ => n
   }
@@ -733,7 +733,7 @@ object Music {
    * @param n2       the main note
    * @return
    */
-  def graceNoteDownbeat(step: Step, fraction: Rational, n1: Music[Pitch], n2: Music[Pitch]): Music[Pitch] = (step, fraction, n1, n2) match {
+  def graceNoteDownbeat(step: Step, fraction: Rational, n1: Prim[Pitch], n2: Prim[Pitch]): Music[Pitch] = (step, fraction, n1, n2) match {
     case (n, r, Prim(Note(d1, p1: Pitch)), Prim(Note(d2, p2: Pitch))) =>
       note(d1 - r * d2, p1) :+: note(r * d2, p2.transpose(n)) :+: note(d2, p2)
     case _ => n2

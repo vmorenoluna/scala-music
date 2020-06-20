@@ -8,7 +8,7 @@ import spire.math.Rational
 class MusicSpec extends UnitSpec {
 
   "line" should "create a sequential Music from a list of notes" in {
-    val notes: List[Music[Pitch]] = List(c(4, qn), d(4, qn), e(4, qn), fs(4, qn), gs(4, qn))
+    val notes: List[Prim[Pitch]] = List(c(4, qn), d(4, qn), e(4, qn), fs(4, qn), gs(4, qn))
 
     line(notes) should equal(
       c(4, qn) :+: d(4, qn) :+: e(4, qn) :+: fs(4, qn) :+: gs(4, qn) :+: rest(0)
@@ -43,7 +43,7 @@ class MusicSpec extends UnitSpec {
 
   "fuse" should "fuse a list of Duration with a list of Prims with unspecified Duration" in {
     val durations: List[Duration] = List(qn, en, sn, qn, wn, qn)
-    val notes: List[Duration => Music[Pitch]] = List(c(4, _), d(4, _), e(4, _), rest(_), fs(4, _), g(4, _))
+    val notes: List[Duration => Prim[Pitch]] = List(c(4, _), d(4, _), e(4, _), rest, fs(4, _), g(4, _))
 
     fuse(durations, notes) should equal(
       List(c(4, qn), d(4, en), e(4, sn), rest(qn), fs(4, wn), g(4, qn))
@@ -60,7 +60,7 @@ class MusicSpec extends UnitSpec {
   }
 
   "addDuration" should "add a duration to a list of notes" in {
-    val notes: List[Duration => Music[Pitch]] = List(c(4, _), d(4, _), e(4, _))
+    val notes: List[Duration => Prim[Pitch]] = List(c(4, _), d(4, _), e(4, _))
     val duration: Duration = qn
 
     addDuration(duration, notes) should equal(
@@ -69,7 +69,7 @@ class MusicSpec extends UnitSpec {
   }
 
   "graceNote" should "add to a note a grace note that is higher than the main note by a given step" in {
-    val note: Music[Pitch] = e(4, qn)
+    val note: Prim[Pitch] = e(4, qn)
 
     graceNote(ws, note) should equal(
       fs(4, qn / 8) :+: e(4, 7 * qn / 8)
@@ -77,7 +77,7 @@ class MusicSpec extends UnitSpec {
   }
 
   "graceNoteFraction" should "add to a note a grace note that will be higher than the main note by a given step and will last for the given main note's time fraction" in {
-    val note: Music[Pitch] = e(4, qn)
+    val note: Prim[Pitch] = e(4, qn)
     val fraction: Rational = Rational(1) / 8
 
     graceNoteFraction(ws, fraction, note) should equal(
@@ -86,8 +86,8 @@ class MusicSpec extends UnitSpec {
   }
 
   "graceNoteDownbeat" should "add to a note a grace note so that the downbeat of the main note is unchanged" in {
-    val note1: Music[Pitch] = c(4, qn)
-    val note2: Music[Pitch] = e(4, qn)
+    val note1: Prim[Pitch] = c(4, qn)
+    val note2: Prim[Pitch] = e(4, qn)
     val fraction: Rational = Rational(1) / 8
 
     graceNoteDownbeat(ws, fraction, note1, note2) should equal(
@@ -122,18 +122,18 @@ class MusicSpec extends UnitSpec {
 
   "retro" should "reverse a Music" in {
     val m1 = b(4, qn) :+: f(5, qn) :+: g(4, qn) :+: c(5, qn)
-    val m2 = c(4, en) :+: Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
+    val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
     retro(music) should equal(
       (((c(5, qn) :+: g(4, qn)) :+: f(5, qn)) :+: b(4, qn)) :=:
-        ((((rest[Pitch](qn) :+: d(5, qn)) :+: as(4, qn)) :+: Modification(Instrument(Violin), g(5, en))) :+: c(4, en))
+        (rest[Pitch](dqn) :+: (d(5, qn) :+: as(4, qn)) :+: Modification(Instrument(Violin), g(5, en)))
     )
   }
 
   "pitches" should "convert a line music to a list of pitches by applying a function to the original pitches in the Music" in {
     val music: Music[Pitch] = c(4, qn) :+: d(4, qn) :+: rest[Pitch](qn) :+: b(4, qn) :+: rest[Pitch](hn)
-    val function: Pitch => Pitch = p => pitch(absPitch(p) + ws)
+    val function: Pitch => Pitch = p => p.transpose(ws)
 
     pitches(music, function) should equal(
       List((D, 4), (E, 4), (Cs, 5))
