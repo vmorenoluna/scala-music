@@ -148,4 +148,22 @@ class MusicSpec extends UnitSpec {
     )
   }
 
+  "transM" should "transpose a Music by a given absolute pitch" in {
+    val m1 = b(4, qn) :+: f(5, qn) :+: rest[Pitch](0) :+: c(5, qn)
+    val m2 = Modification(Instrument(Violin), e(5, en)) :+: as(4, qn) :+: d(5, qn)
+    val music: Music[Pitch] = m1 :=: m2
+
+    transM(2, music) should equal(
+      (cs(5, qn) :+: g(5, qn) :+: rest[Pitch](0) :+: d(5, qn)) :=:
+        (Modification(Instrument(Violin), fs(5, en)) :+: c(5, qn) :+: e(5, qn))
+    )
+  }
+
+  "duration" should "calculate the duration of a Music" in {
+    val m1 = b(4, qn) :+: f(5, qn) :+: Modification(Tempo(2), g(4, hn)):+: c(5, qn)
+    val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
+    val music: Music[Pitch] = m1 :=: m2
+
+    duration(music) should equal(wn)
+  }
 }
