@@ -67,7 +67,7 @@ sealed trait Music[A] {
    * @param that the parallel Music to cut with this
    * @return
    */
-  def /=:(that: Music[A]): Music[A] = Music.cutL(Music.durationL(that), this) :=: Music.cutL(Music.durationL(this), that)
+  def /=:(that: Music[A]): Music[A] = Music.cut(Music.duration(that), this) :=: Music.cut(Music.duration(this), that)
 }
 
 /**
@@ -879,32 +879,6 @@ object Music {
     case :=:(m1, m2) => duration(m1) max duration(m2)
   }
 
-  private def mergeLD(ld1: LazyDur, ld2: LazyDur): LazyDur = (ld1, ld2) match {
-    case (LazyNil, ld) => ld
-    case (ld, LazyNil) => ld
-    case (d1 #:: ds1, d2 #:: ds2) => if (d1 < d2) d1 +: mergeLD(ds1, ld2) else d2 +: mergeLD(ld1, ds2)
-  }
-
-  /**
-   * Calculate the duration of a Music as a LazyDuration.
-   * A LazyDuration is a non decreasing list of durations such that the last element in the list is the actual duration,
-   * and an infinite list implies an infinite duration
-   *
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def durationL[A](m: Music[A]): LazyDur = m match {
-    case Prim(_) => LazyList(duration(m))
-    case Modification(Tempo(r), m) => durationL(m).map(_ / r)
-    case Modification(_, m) => durationL(m)
-    case :+:(m1, m2) => {
-      val d1 = durationL(m1)
-      d1 ++ durationL(m2).map(_ + d1.last)
-    }
-    case :=:(m1, m2) => mergeLD(durationL(m1), durationL(m2))
-  }
-
   /**
    * Cut the initial specified duration from a Music.
    *
@@ -925,35 +899,6 @@ object Music {
       m3 :+: m4
     }
     case :=:(m1, m2) => cut(d, m1) :=: cut(d, m2)
-  }
-
-  private def minL(ld: LazyDur, d: Duration): Duration = (ld, d) match {
-    case (LazyNil, _) => zero
-    case (LazyList(d1), d2) => d1 min d2
-    case (d1 #:: ds, d2) => if (d1 < d2) minL(ds, d2) else d2
-  }
-
-  /**
-   * Cut the initial specified duration from a Music.
-   *
-   * @param ld
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def cutL[A](ld: LazyDur, m: Music[A]): Music[A] = (ld, m) match {
-    case (LazyNil, _) => rest(zero)
-    case (d #:: ds, m) if (d <= zero) => cutL(ds, m)
-    case (ld, Prim(Note(oldD, p))) => note(minL(ld, oldD), p)
-    case (ld, Prim(Rest(oldD))) => rest(minL(ld, oldD))
-    case (ld, Modification(Tempo(r), m)) => tempo(r, cutL(ld.map(_ * r), m))
-    case (ld, Modification(c, m)) => Modification(c, cutL(ld, m))
-    case (ld, :+:(m1, m2)) => {
-      val m3 = cutL[A](ld, m1)
-      val m4 = cutL[A](ld.map(d => d - duration(m3)), m2)
-      m3 :+: m4
-    }
-    case (ld, :=:(m1, m2)) => cutL(ld, m1) :=: cutL(ld, m2)
   }
 
   /**

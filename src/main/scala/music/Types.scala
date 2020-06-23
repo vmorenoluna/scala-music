@@ -18,14 +18,14 @@ object Types {
   type Volume = Int
   type Pitch = (PitchClass, Octave)
   type Duration = Rational
-  /**
-   * A non decreasing list of durations such that the last element in the list is the actual duration,
-   * and an infinite list implies an infinite duration
-   */
-  type LazyDur = LazyList[Duration]
-  val LazyNil = LazyList.empty
 
+  /**
+   * Half step
+   */
   val hs: Step = 1
+  /**
+   * Whole step
+   */
   val ws: Step = 2
 
   /**

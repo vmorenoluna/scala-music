@@ -160,10 +160,22 @@ class MusicSpec extends UnitSpec {
   }
 
   "duration" should "calculate the duration of a Music" in {
-    val m1 = b(4, qn) :+: f(5, qn) :+: Modification(Tempo(2), g(4, hn)):+: c(5, qn)
+    val m1 = b(4, qn) :+: f(5, qn) :+: Modification(Tempo(2), g(4, hn)) :+: c(5, qn)
     val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
     duration(music) should equal(wn)
   }
+
+  "cut" should "cut the initial specified duration from a Music" in {
+    val m1 = b(4, qn) :+: Modification(Tempo(2), g(4, hn)) :+: c(5, qn)
+    val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
+    val music: Music[Pitch] = m1 :=: m2
+
+    cut(dqn, music) should equal(
+      (b(4, qn) :+: Modification(Tempo(2), g(4, qn)) :+: rest(0)) :=:
+        (Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: rest(0))
+    )
+  }
+
 }
