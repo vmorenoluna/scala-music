@@ -178,4 +178,15 @@ class MusicSpec extends UnitSpec {
     )
   }
 
+  "remove" should "remove the initial specified duration from a Music" in {
+    val m1 = b(4, qn) :+: Modification(Tempo(2), g(4, hn)) :+: c(5, qn)
+    val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
+    val music: Music[Pitch] = m1 :=: m2
+
+    remove(dqn, music) should equal(
+      (b(4, 0) :+: Modification(Tempo(2), g(4, qn)) :+: c(5, qn)) :=:
+        (Modification(Instrument(Violin), g(5, 0)) :+: as(4, 0) :+: d(5, qn))
+    )
+  }
+
 }
