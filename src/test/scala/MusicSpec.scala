@@ -189,4 +189,14 @@ class MusicSpec extends UnitSpec {
     )
   }
 
+  "removeZeros" should "remove all notes and rests with zero duration from a Music" in {
+    val m1 = b(4, 0) :+: Modification(Tempo(2), g(4, qn)) :+: c(5, qn)
+    val m2 = Modification(Instrument(Violin), g(5, 0)) :+: as(4, 0) :+: d(5, qn)
+    val music: Music[Pitch] = m1 :=: m2
+
+    removeZeros(music) should equal(
+      (Modification(Tempo(2), g(4, qn)) :+: c(5, qn)) :=:
+        (Modification(Instrument(Violin), g(5, 0)) :+: d(5, qn))
+    )
+  }
 }
