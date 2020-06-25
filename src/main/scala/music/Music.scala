@@ -965,7 +965,7 @@ object Music {
         note(sDur, p) :+: trill(-i, sDur, note(tDur - sDur, p.transpose(i)))
     case (i, d, Modification(Tempo(r), m)) => tempo(r, trill(i, d * r, m))
     case (i, d, Modification(c, m)) => Modification(c, trill(i, d, m))
-    case _ => rest(zero)
+    case _ => m
   }
 
   /**

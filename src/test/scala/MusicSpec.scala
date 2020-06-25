@@ -199,4 +199,46 @@ class MusicSpec extends UnitSpec {
         (Modification(Instrument(Violin), g(5, 0)) :+: d(5, qn))
     )
   }
+
+  "trill" should "add a trill note to a given note" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val interval: Step = ws
+    val duration: Duration = en
+
+    trill(interval, duration, note) should equal(
+      Modification(Tempo(2), c(4, qn) :+: d(4, qn))
+    )
+  }
+
+  "trillOtherNote" should "add a trill note to a given note so that the result starts on the trill note" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val interval: Step = ws
+    val duration: Duration = en
+
+    trillOtherNote(interval, duration, note) should equal(
+      Modification(Transpose(2),Modification(Tempo(2),c(4, qn) :+: as(3, qn)))
+    )
+  }
+
+  "trilln" should "add a trill note to a given note" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val interval: Step = ws
+    val subdivisions: Int = 4
+
+    trilln(interval, subdivisions, note) should equal(
+      Modification(Tempo(2),c(4, en) :+: d(4, en) :+: c(4, en) :+: d(4, en))
+    )
+  }
+
+  "trillnOtherNote" should "add a trill note to a given note with the result starting on the trill note" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val interval: Step = ws
+    val subdivisions: Int = 4
+
+    trillnOtherNote(interval, subdivisions, note) should equal(
+      Modification(Transpose(2),Modification(Tempo(2),c(4, en) :+: as(3, en):+: c(4, en) :+: as(3, en)))
+    )
+  }
+
+
 }
