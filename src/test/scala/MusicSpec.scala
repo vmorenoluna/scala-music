@@ -240,5 +240,23 @@ class MusicSpec extends UnitSpec {
     )
   }
 
+  "roll" should "define a roll" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val duration: Duration = en
+
+    roll(duration, note) should equal(
+      Modification(Tempo(2),c(4, qn) :+: c(4, qn))
+    )
+  }
+
+  "rolln" should "define a roll" in {
+    val note: Music[Pitch] = Modification(Tempo(2), c(4, hn))
+    val interval: Step = ws
+    val subdivisions: Int = 4
+
+    rolln(subdivisions, note) should equal(
+      Modification(Tempo(2),c(4, en) :+: c(4, en) :+: c(4, en) :+: c(4, en))
+    )
+  }
 
 }
