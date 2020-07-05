@@ -278,11 +278,29 @@ class MusicSpec extends UnitSpec {
   }
 
   "mMap" should "map the Music type" in {
-    val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4,qn))
+    val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4, qn))
     val f: Pitch => Pitch = pc => (pc._1, pc._2 + 1)
 
     mMap(f, music) should equal(
-      (c(5, qn) :+: Modification(Instrument(Violin), d(5, qn))) :=: (rest[Pitch](qn) :+: c(5,qn))
+      (c(5, qn) :+: Modification(Instrument(Violin), d(5, qn))) :=: (rest[Pitch](qn) :+: c(5, qn))
+    )
+  }
+
+  "addVolume" should "convert a Music[Pitch] to a Music[(Pitch, Volume)]" in {
+    val music = c(4, qn) :+: d(4, qn)
+    val volume = 5
+
+    addVolume(volume, music) should equal(
+      Prim(Note(qn, ((C,4),5))) :+: Prim(Note(qn, ((D,4),5)))
+    )
+  }
+
+  "scaleVolume" should "scale the volume of each note in a music by a given factor" in {
+    val music = Prim(Note(qn, ((C,4),8))) :+: Prim(Note(qn, ((D,4),8)))
+    val volume = 5
+
+    scaleVolume(Rational(1,2), music) should equal(
+      Prim(Note(qn, ((C,4), 4))) :+: Prim(Note(qn, ((D,4), 4)))
     )
   }
 
