@@ -216,7 +216,7 @@ class MusicSpec extends UnitSpec {
     val duration: Duration = en
 
     trillOtherNote(interval, duration, note) should equal(
-      Modification(Transpose(2),Modification(Tempo(2),c(4, qn) :+: as(3, qn)))
+      Modification(Transpose(2), Modification(Tempo(2), c(4, qn) :+: as(3, qn)))
     )
   }
 
@@ -226,7 +226,7 @@ class MusicSpec extends UnitSpec {
     val subdivisions: Int = 4
 
     trilln(interval, subdivisions, note) should equal(
-      Modification(Tempo(2),c(4, en) :+: d(4, en) :+: c(4, en) :+: d(4, en))
+      Modification(Tempo(2), c(4, en) :+: d(4, en) :+: c(4, en) :+: d(4, en))
     )
   }
 
@@ -236,7 +236,7 @@ class MusicSpec extends UnitSpec {
     val subdivisions: Int = 4
 
     trillnOtherNote(interval, subdivisions, note) should equal(
-      Modification(Transpose(2),Modification(Tempo(2),c(4, en) :+: as(3, en):+: c(4, en) :+: as(3, en)))
+      Modification(Transpose(2), Modification(Tempo(2), c(4, en) :+: as(3, en) :+: c(4, en) :+: as(3, en)))
     )
   }
 
@@ -245,7 +245,7 @@ class MusicSpec extends UnitSpec {
     val duration: Duration = en
 
     roll(duration, note) should equal(
-      Modification(Tempo(2),c(4, qn) :+: c(4, qn))
+      Modification(Tempo(2), c(4, qn) :+: c(4, qn))
     )
   }
 
@@ -255,7 +255,34 @@ class MusicSpec extends UnitSpec {
     val subdivisions: Int = 4
 
     rolln(subdivisions, note) should equal(
-      Modification(Tempo(2),c(4, en) :+: c(4, en) :+: c(4, en) :+: c(4, en))
+      Modification(Tempo(2), c(4, en) :+: c(4, en) :+: c(4, en) :+: c(4, en))
+    )
+  }
+
+  "percussion" should "convert a PercussionSound to a note" in {
+    val duration: Duration = en
+    val percussionSound = PercussionSound.Cowbell
+
+    percussion(percussionSound, duration) should equal(
+      Modification(Instrument(InstrumentName.Percussion), Music.note(duration, pitch(56)))
+    )
+  }
+
+  "pMap" should "map the Primitive type" in {
+    val note = Note(qn, (C, 4))
+    val rest = Rest(qn)
+    val f: Pitch => Pitch = pc => (pc._1, pc._2 + 1)
+
+    pMap(f, note) should equal(Note(qn, (C, 5)))
+    pMap(f, rest) should equal(rest)
+  }
+
+  "mMap" should "map the Music type" in {
+    val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4,qn))
+    val f: Pitch => Pitch = pc => (pc._1, pc._2 + 1)
+
+    mMap(f, music) should equal(
+      (c(5, qn) :+: Modification(Instrument(Violin), d(5, qn))) :=: (rest[Pitch](qn) :+: c(5,qn))
     )
   }
 

@@ -1030,7 +1030,7 @@ object Music {
    * @param d  the duration
    * @return
    */
-  def perc(ps: PercussionSound.Value, d: Duration): Music[Pitch] =
+  def percussion(ps: PercussionSound.Value, d: Duration): Music[Pitch] =
     instrument(InstrumentName.Percussion, note(d, pitch(ps.id + 35)))
 
   /**
