@@ -297,11 +297,17 @@ class MusicSpec extends UnitSpec {
 
   "scaleVolume" should "scale the volume of each note in a music by a given factor" in {
     val music = Prim(Note(qn, ((C,4),8))) :+: Prim(Note(qn, ((D,4),8)))
-    val volume = 5
 
     scaleVolume(Rational(1,2), music) should equal(
       Prim(Note(qn, ((C,4), 4))) :+: Prim(Note(qn, ((D,4), 4)))
     )
+  }
+
+  "mFold" should "fold the Music type" in {
+    val f: Primitive[Pitch] => Music[Pitch] = p => Prim(p)
+    val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4, qn))
+
+    mFold(f)(:+:[Pitch])(:=:[Pitch])(Modification[Pitch])(music) should equal (music)
   }
 
 }
