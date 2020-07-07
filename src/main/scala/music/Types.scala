@@ -18,12 +18,15 @@ object Types {
   type Volume = Int
   type Pitch = (PitchClass, Octave)
   type Duration = Rational
+
   /**
-   * A non decreasing list of durations such that the last element in the list is the actual duration,
-   * and an infinite list implies an infinite duration
+   * Half step
    */
-  type LazyDur = LazyList[Duration]
-  val LazyNil = LazyList.empty
+  val hs: Step = 1
+  /**
+   * Whole step
+   */
+  val ws: Step = 2
 
   /**
    * Enumerates all the available pitch class in an octave
@@ -116,10 +119,6 @@ object Types {
     val pitchClass = List(C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B)(n)
     (pitchClass, oct - 1)
   }
-
-  def hs(): Step = 1
-
-  def ws(): Step = 2
 
   /**
    * Transpose a pitch by the given amount of half steps
