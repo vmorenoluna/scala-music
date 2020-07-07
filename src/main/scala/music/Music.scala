@@ -1112,7 +1112,7 @@ object Music {
   }
 
   /**
-   * Crete triplets out of eight notes.
+   * Create triplets out of eight notes.
    * TODO make it more generic
    *
    * @param m the music formed by eight notes
@@ -1125,6 +1125,7 @@ object Music {
   /**
    * Create a phase composition by repeating the music in parallel
    * with itself.
+   * TODO move to a transformation class
    *
    * @param factor the phase factor
    * @param m      the music
@@ -1137,6 +1138,7 @@ object Music {
   /**
    * Recursively apply transformations f (to elements in a sequence)
    * and g (to accumulated phrases) some specified number of times.
+   * TODO move to a transformation class
    *
    * @param f transformation f
    * @param g transofrmation g
