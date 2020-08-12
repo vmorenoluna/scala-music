@@ -1,8 +1,9 @@
-import music.Music._
-import music.Types._
+package music
+
 import music.InstrumentName.Violin
+import music.Music._
 import music.Types.PitchClass._
-import music._
+import music.Types._
 import spire.math.Rational
 
 class MusicSpec extends UnitSpec {

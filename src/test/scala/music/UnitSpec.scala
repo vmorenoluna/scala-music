@@ -1,5 +1,7 @@
-import music.Types.{AbsPitch, Octave, Pitch}
+package music
+
 import music.Types.PitchClass._
+import music.Types.{AbsPitch, Octave, Pitch}
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.prop.{Generator, GeneratorDrivenPropertyChecks}
