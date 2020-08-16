@@ -1,5 +1,6 @@
 package performance
 
+import music.MusicWithAttributes.NoteWithAttributes
 import music._
 import performance.players.Player.players
 import performance.players.DefaultPlayer
@@ -19,7 +20,7 @@ object Performance {
    * @tparam A
    * @return  the performance
    */
-  def perform[A](c: Context[A], m: Music[A]): Performance =
+  def perform[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance =
     perf(c, m)._1
 
   /**
@@ -30,7 +31,7 @@ object Performance {
    * @tparam A
    * @return  a tuple composed by the performance and its duration
    */
-  def perf[A](c: Context[A], m: Music[A]): (Performance, DurT) = m match {
+  def perf[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {
     case Prim(Note(d, p)) => (c.cPlayer.playNote(c, d, p), d * c.cDur)
     case Prim(Rest(d)) => (List.empty, d * c.cDur)
     case :+:(m1, m2) => {

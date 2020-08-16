@@ -1,6 +1,6 @@
 package music
 
-import music.Types.{Pitch, Volume => Vol}
+import music.Types.{Pitch, Volume}
 import music.Music.mMap
 
 /**
@@ -27,9 +27,9 @@ object MusicWithAttributes {
     override def transform(m: Music[Pitch]): MusicWithAttributes =
       mMap[Pitch, NoteWithAttributes](p => (p, List.empty[NoteAttribute]), m)
   }
-  implicit val ToMusicWithAttributesPitchVolumeInstance: ToMusicWithAttributesTypeClass[(Pitch, Vol)] = new ToMusicWithAttributesTypeClass[(Pitch, Vol)] {
-    override def transform(m: Music[(Pitch, Vol)]): MusicWithAttributes =
-      mMap[(Pitch, Vol), NoteWithAttributes](t => (t._1, List(Volume(t._2))), m)
+  implicit val ToMusicWithAttributesPitchVolumeInstance: ToMusicWithAttributesTypeClass[(Pitch, Volume)] = new ToMusicWithAttributesTypeClass[(Pitch, Volume)] {
+    override def transform(m: Music[(Pitch, Volume)]): MusicWithAttributes =
+      mMap[(Pitch, Volume), NoteWithAttributes](t => (t._1, List(Volume(t._2))), m)
   }
   implicit val ToMusicWithAttributesInstance: ToMusicWithAttributesTypeClass[NoteWithAttributes] = new ToMusicWithAttributesTypeClass[NoteWithAttributes] {
     override def transform(m: Music[NoteWithAttributes]): MusicWithAttributes = m
