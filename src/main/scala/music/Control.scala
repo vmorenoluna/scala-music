@@ -9,17 +9,31 @@ import spire.math.Rational
 
 sealed trait Control
 // TODO eq and ord typeclasses
-final case class Tempo(value: Rational) extends Control
+final case class CtrlTempo(value: Rational) extends Control
 final case class Transpose(value: AbsPitch) extends Control
 final case class Instrument(instrumentName: InstrumentName) extends Control
 final case class Phrase(attributes: List[PhraseAttribute]) extends Control
 final case class KeySig(pitchClass: PitchClass, mode: Mode) extends Control
 final case class Player(player: PlayersEnum) extends Control
 
+/**
+ * Express attributes of notes
+ */
+sealed trait NoteAttribute
+
+// TODO eq typeclass
+final case class Volume(value: Int) extends NoteAttribute // 0-127
+final case class Fingering(value: Int) extends NoteAttribute
+final case class Dynamics(value: String) extends NoteAttribute
+final case class Params(value: List[Double]) extends NoteAttribute
+
+/**
+ * Express attributes of phrases
+ */
 sealed trait PhraseAttribute
 // TODO eq and ord typeclasses
 final case class Dyn(value: Dynamic) extends PhraseAttribute
-final case class Tmp(value: Tempo1) extends PhraseAttribute
+final case class Tmp(value: Tempo) extends PhraseAttribute
 final case class Art(value: Articulation) extends PhraseAttribute
 final case class Orn(value: Ornament) extends PhraseAttribute
 
@@ -28,18 +42,19 @@ sealed trait Dynamic
 final case class Accent(value: Rational) extends Dynamic
 final case class Crescendo(value: Rational) extends Dynamic
 final case class Diminuendo(value: Rational) extends Dynamic
-final case class StdLoudness(value: StdLoudness.Value) extends Dynamic
+final case class StdLoudness(value: StdLoudness) extends Dynamic
 final case class Loudness(value: Rational) extends Dynamic
 
 final object StdLoudness extends Enumeration {
+  val StdLoudness = Value
   val PPP, PP, P, MP, SF, MF, NF, FF, FFF = Value
 }
 // TODO eq and ord typeclasses
 
-sealed trait Tempo1
+sealed trait Tempo
 // TODO eq and ord typeclasses
-final case class Ritardando(value: Rational) extends Tempo1
-final case class Accelerando(value: Rational) extends Tempo1
+final case class Ritardando(value: Rational) extends Tempo
+final case class Accelerando(value: Rational) extends Tempo
 
 sealed trait Articulation
 // TODO eq and ord typeclasses

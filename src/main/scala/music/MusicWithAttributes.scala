@@ -4,17 +4,6 @@ import music.Types.{Pitch, Volume => Vol}
 import music.Music.mMap
 
 /**
- * Express attributes of notes
- */
-sealed trait NoteAttribute
-
-// TODO eq typeclass
-final case class Volume(value: Int) extends NoteAttribute // 0-127
-final case class Fingering(value: Int) extends NoteAttribute
-final case class Dynamics(value: String) extends NoteAttribute
-final case class Params(value: List[Double]) extends NoteAttribute
-
-/**
  * An object to transform a Music to a MusicWithAttributes.
  * The latter is the one that eventually gets translated to
  * a series of MusicEvents

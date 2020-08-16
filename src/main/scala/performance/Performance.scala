@@ -43,7 +43,7 @@ object Performance {
       val (pf2, d2) = perf(c, m2)
       (merge(pf1, pf2), d1 max d2)
     }
-    case Modification(Tempo(r), m) => perf(c.copy(cDur = c.cDur / r), m)
+    case Modification(CtrlTempo(r), m) => perf(c.copy(cDur = c.cDur / r), m)
     case Modification(Transpose(p), m) => perf(c.copy(cPch = c.cPch + p), m)
     case Modification(Instrument(i), m) => perf(c.copy(cInst = i), m)
     case Modification(KeySig(pc, mo), m) => perf(c.copy(cKey = (pc, mo)), m)
