@@ -13,7 +13,7 @@ import performance.players.Player
  * @param cTime   current time
  * @param cPlayer current player
  * @param cInst   current instrument
- * @param cDur    duration, in seconds, of one whole note
+ * @param cDur    duration, in seconds, of one whole note  // TODO must be in ticks, this scales the actual duration in Performance.perf
  * @param cPch    current pitch
  * @param cVol    current volume 0-127
  * @param cKey    current key

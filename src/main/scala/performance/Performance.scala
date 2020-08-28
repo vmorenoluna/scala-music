@@ -20,7 +20,7 @@ object Performance {
    * @tparam A
    * @return  the performance
    */
-  def perform[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance =
+  def perform[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance = // TODO generic
     perf(c, m)._1
 
   /**
@@ -31,7 +31,7 @@ object Performance {
    * @tparam A
    * @return  a tuple composed by the performance and its duration
    */
-  def perf[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {
+  def perf[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {  // TODO generic
     case Prim(Note(d, p)) => (c.cPlayer.playNote(c, d, p), d * c.cDur)
     case Prim(Rest(d)) => (List.empty, d * c.cDur)
     case :+:(m1, m2) => {
@@ -48,7 +48,7 @@ object Performance {
     case Modification(Transpose(p), m) => perf(c.copy(cPch = c.cPch + p), m)
     case Modification(Instrument(i), m) => perf(c.copy(cInst = i), m)
     case Modification(KeySig(pc, mo), m) => perf(c.copy(cKey = (pc, mo)), m)
-    case Modification(Phrase(pas), m) => c.cPlayer.interpPhrase(c, pas, m)
+    case Modification(Phrase(pas), m) => c.cPlayer.interpretPhrase(c, pas, m)
     case Modification(Player(s), m) => perf(c.copy(cPlayer = players.getOrElse(s, DefaultPlayer)), m)
   }
 
