@@ -135,7 +135,7 @@ object Music {
    * @tparam A
    * @return
    */
-  def tempo[A](d: Duration, m: Music[A]): Music[A] = Modification(Tempo(d), m)
+  def tempo[A](d: Duration, m: Music[A]): Music[A] = Modification(CtrlTempo(d), m)
 
   /**
    * Transpose a Music of type `A` to a given absolute pitch.
@@ -873,7 +873,7 @@ object Music {
   def duration[A](m: Music[A]): Duration = m match {
     case Prim(Note(d, _)) => d
     case Prim(Rest(d)) => d
-    case Modification(Tempo(r), m) => duration(m) / r
+    case Modification(CtrlTempo(r), m) => duration(m) / r
     case Modification(_, m) => duration(m)
     case :+:(m1, m2) => duration(m1) + duration(m2)
     case :=:(m1, m2) => duration(m1) max duration(m2)
@@ -891,7 +891,7 @@ object Music {
     case _ if d <= 0 => rest(0)
     case Prim(Note(oldD, p)) => note(oldD min d, p)
     case Prim(Rest(oldD)) => rest(oldD min d)
-    case Modification(Tempo(r), m) => tempo(r, cut(d * r, m))
+    case Modification(CtrlTempo(r), m) => tempo(r, cut(d * r, m))
     case Modification(c, m) => Modification(c, cut(d, m))
     case :+:(m1, m2) => {
       val m3 = cut[A](d, m1)
@@ -913,7 +913,7 @@ object Music {
     case _ if d <= 0 => m
     case Prim(Note(oldD, p)) => note((oldD - d) max 0, p)
     case Prim(Rest(oldD)) => rest((oldD - d) max 0)
-    case Modification(Tempo(r), m) => tempo(r, remove(d * r, m))
+    case Modification(CtrlTempo(r), m) => tempo(r, remove(d * r, m))
     case Modification(c, m) => Modification(c, remove(d, m))
     case :+:(m1, m2) => {
       val m3 = remove[A](d, m1)
@@ -963,7 +963,7 @@ object Music {
         note(tDur, p)
       else
         note(sDur, p) :+: trill(-i, sDur, note(tDur - sDur, p.transpose(i)))
-    case (i, d, Modification(Tempo(r), m)) => tempo(r, trill(i, d * r, m))
+    case (i, d, Modification(CtrlTempo(r), m)) => tempo(r, trill(i, d * r, m))
     case (i, d, Modification(c, m)) => Modification(c, trill(i, d, m))
     case _ => m
   }

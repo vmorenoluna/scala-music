@@ -1,5 +1,7 @@
-import music.Types._
+package music
+
 import music.Types.PitchClass._
+import music.Types._
 
 class TypesSpec extends UnitSpec {
 
