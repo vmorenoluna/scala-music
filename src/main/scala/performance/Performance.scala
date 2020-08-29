@@ -17,10 +17,9 @@ object Performance {
    *
    * @param c the initial context
    * @param m the music to perform
-   * @tparam A
    * @return  the performance
    */
-  def perform[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance = // TODO generic
+  def perform(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance =
     perf(c, m)._1
 
   /**
@@ -28,10 +27,9 @@ object Performance {
    *
    * @param c the initial context
    * @param m the music to perform
-   * @tparam A
    * @return  a tuple composed by the performance and its duration
    */
-  def perf[A](c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {  // TODO generic
+  def perf(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {
     case Prim(Note(d, p)) => (c.cPlayer.playNote(c, d, p), d * c.cDur)
     case Prim(Rest(d)) => (List.empty, d * c.cDur)
     case :+:(m1, m2) => {
