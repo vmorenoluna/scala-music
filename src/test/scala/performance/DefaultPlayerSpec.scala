@@ -10,7 +10,6 @@ import music.{Accent, Art, Dyn, Dynamics, Fingering, Legato, Note, Params, Phras
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import performance.players.DefaultPlayer
-import spire.math.Rational
 
 class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
 
@@ -33,7 +32,7 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
     DefaultPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
         MusicEvent(0, AltoSax, 197, qn, 120, List()),
-        MusicEvent(Rational(1, 4), AltoSax, 197, qn, 120, List())
+        MusicEvent(qn, AltoSax, 197, qn, 120, List())
       ), hn)
     )
   }
@@ -47,7 +46,7 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
     DefaultPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
         MusicEvent(0, AltoSax, 197, qn, 120, List()),
-        MusicEvent(Rational(1, 4), AltoSax, 197, qn, 120, List())
+        MusicEvent(qn, AltoSax, 197, qn, 120, List())
       ), hn)
     )
   }

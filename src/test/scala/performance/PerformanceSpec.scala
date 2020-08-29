@@ -1,15 +1,15 @@
 package performance
 
-import music.InstrumentName.AltoSax
-import music.Mode.Major
+import music.InstrumentName.{AcousticGrandPiano, AltoSax}
+import music.Mode.{Major, Minor}
 import music.Music.{dhn, hn, qn, wn}
 import music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
-import music.{CtrlTempo, Modification, Note, Prim}
+import music.{Accent, Art, CtrlTempo, Dyn, Instrument, KeySig, Modification, Note, Phrase, PhraseAttribute, Player, Prim, Staccato, Transpose}
 import music.Types.PitchClass.C
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import performance.Performance.{Performance, merge, perf}
-import performance.players.DefaultPlayer
+import performance.players.{DefaultPlayer, PlayersEnum}
 
 class PerformanceSpec extends AnyFlatSpec with Matchers {
 
@@ -35,6 +35,77 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
     val c: Context[NoteWithAttributes] = buildContext()
     val m: MusicWithAttributes = (
       Modification(CtrlTempo(2), Prim(Note(hn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
+      ).toMusicWithAttributes()
+
+    perf(c, m) should equal(
+      (List(
+        MusicEvent(0, AltoSax, 197, qn, 60, List()),
+        MusicEvent(qn, AltoSax, 209, qn, 80, List())
+      ), hn)
+    )
+  }
+
+  "perf" should "properly handle a Transpose Modification while performing a Music " in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val m: MusicWithAttributes = (
+      Modification(Transpose(12), Prim(Note(qn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
+      ).toMusicWithAttributes()
+
+    perf(c, m) should equal(
+      (List(
+        MusicEvent(0, AltoSax, 209, qn, 60, List()),
+        MusicEvent(qn, AltoSax, 209, qn, 80, List())
+      ), hn)
+    )
+  }
+
+  "perf" should "properly handle a Instrument Modification while performing a Music " in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val m: MusicWithAttributes = (
+      Modification(Instrument(AcousticGrandPiano), Prim(Note(qn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
+      ).toMusicWithAttributes()
+
+    perf(c, m) should equal(
+      (List(
+        MusicEvent(0, AcousticGrandPiano, 197, qn, 60, List()),
+        MusicEvent(qn, AltoSax, 209, qn, 80, List())
+      ), hn)
+    )
+  }
+
+  "perf" should "properly handle a Key Signature Modification while performing a Music " in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val m: MusicWithAttributes = (
+      Modification(KeySig(C, Minor), Prim(Note(qn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
+      ).toMusicWithAttributes()
+
+    perf(c, m) should equal(
+      (List(
+        MusicEvent(0, AltoSax, 197, qn, 60, List()),
+        MusicEvent(qn, AltoSax, 209, qn, 80, List())
+      ), hn)
+    )
+  }
+
+  "perf" should "properly handle a Phrase Modification while performing a Music " in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val pas: List[PhraseAttribute] = List(Dyn(Accent(2)), Art(Staccato(1)))
+    val m: MusicWithAttributes = (
+      Modification(Phrase(pas), Prim(Note(qn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
+      ).toMusicWithAttributes()
+
+    perf(c, m) should equal(
+      (List(
+        MusicEvent(0, AltoSax, 197, qn, 120, List()),
+        MusicEvent(qn, AltoSax, 209, qn, 80, List())
+      ), hn)
+    )
+  }
+
+  "perf" should "properly handle a Player Modification while performing a Music " in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val m: MusicWithAttributes = (
+      Modification(Player(PlayersEnum.DefaultPlayer), Prim(Note(qn, ((C, 5), 60)))) :+: Prim(Note(qn, ((C, 6), 80)))
       ).toMusicWithAttributes()
 
     perf(c, m) should equal(
