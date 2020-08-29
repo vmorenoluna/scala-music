@@ -8,10 +8,28 @@ import music.{Accent, Art, CtrlTempo, Dyn, Instrument, KeySig, Modification, Not
 import music.Types.PitchClass.C
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
-import performance.Performance.{Performance, merge, perf}
+import performance.Performance.{Performance, merge, perf, perform}
 import performance.players.{DefaultPlayer, PlayersEnum}
 
 class PerformanceSpec extends AnyFlatSpec with Matchers {
+
+  "perform" should "perform a Music" in {
+    val c: Context[NoteWithAttributes] = buildContext()
+    val m: MusicWithAttributes = (
+      (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Note(hn, ((C, 6), 80))) :+: Prim(Note(qn, ((C, 5), 50)))) :=: // TODO test the rest: (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Rest(hn)) :+: Prim(Note(qn, ((C, 5), 50)))) :=:
+        (Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(hn, ((C, 3), 30))))
+      ).toMusicWithAttributes()
+
+    perform(c, m) should equal(
+      List(
+        MusicEvent(0, AltoSax, 173, hn, 40, List()),
+        MusicEvent(0, AltoSax, 197, qn, 60, List()),
+        MusicEvent(qn, AltoSax, 209, hn, 80, List()),
+        MusicEvent(hn, AltoSax, 173, hn, 30, List()),
+        MusicEvent(dhn, AltoSax, 197, qn, 50, List())
+      )
+    )
+  }
 
   "perf" should "perform a Music" in {
     val c: Context[NoteWithAttributes] = buildContext()
