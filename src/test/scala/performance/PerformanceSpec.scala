@@ -16,7 +16,7 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
   "perf" should "perform a Music" in {
     val c: Context[NoteWithAttributes] = buildContext()
     val m: MusicWithAttributes = (
-      (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Note(hn, ((C, 6), 80))) :+: Prim(Note(qn, ((C, 5), 50)))) :=:
+      (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Note(hn, ((C, 6), 80))) :+: Prim(Note(qn, ((C, 5), 50)))) :=: // TODO test the rest: (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Rest(hn)) :+: Prim(Note(qn, ((C, 5), 50)))) :=:
         (Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(hn, ((C, 3), 30))))
       ).toMusicWithAttributes()
 
