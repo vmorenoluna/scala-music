@@ -2,11 +2,12 @@ package midi
 
 import java.io.File
 
+import com.sun.media.sound.MidiUtils
 import javax.sound.midi._
 import javax.sound.midi.ShortMessage._
 import performance.MusicEvent
 import performance.Performance.Performance
-
+import cats.implicits._
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -22,7 +23,7 @@ object MidiService {
   //  val ticksPerSecond = Resolution * (currentTempoBPM / 60.0)
   //  val tickSize = 1.0 / ticksPerSecond
 
-  // TODO must accept a list of performances, so to use multiple instruments on the different channels
+  // TODO must accept a list of performances, so to use multiple instruments on the different channels/tracks
   def writePerformance(performance: Performance, pathName: String): Unit = {
     val events: Seq[MidiEvent] =
       performance
@@ -39,35 +40,31 @@ object MidiService {
     MidiSystem.write(sequence, 1, file)
   }
 
-
   /**
    * Plays the performance via the JavaSound MIDI synthesizer
    *
    * @param performance the performance to play
    * @return
    */
-  def play(performance: Performance): Unit = {
-    init()
-    performanceToMidiEvents(performance).map { sequence =>
-      sequencer match {
-        case Failure(exception) => handleError(ex = exception)
-        case Success(seq) => {
-          seq.open()
+  def play(performance: Performance): Unit =
+    init() match {
+      case None => ()
+      case Some(value) =>
+        performanceToMidiEvents(performance).map { sequence =>
+          val seq = value._1
+          val synth = value._2
           seq.addMetaEventListener((metaMsg: MetaMessage) => {
-            if (metaMsg.getType() == 0x2F) {
-              seq.close();
+            if (metaMsg.getType() == MidiUtils.META_END_OF_TRACK_TYPE) {
+              teardown()
             }
           })
           // seq.setTempoInBPM(m_masterTempo);
           seq.setSequence(sequence)
-          seq.stop()
           seq.setTickPosition(0)
-          seq.start();
-          seq.close()
+          //          seq.getTransmitter().setReceiver(synth.getReceiver())
+          seq.start()
         }
-      }
     }
-  }
 
   /**
    * Converts a Performance into a MIDI Sequence
@@ -77,9 +74,7 @@ object MidiService {
    */
   private def performanceToMidiEvents(performance: Performance): Try[Sequence] =
     Try {
-      // TODO handle program and control changes
       // TODO One track per Part
-      // TODO Error handling
 
       val events: Seq[MidiEvent] =
         performance
@@ -92,37 +87,12 @@ object MidiService {
         track.add(ev)
       }
 
-      //        if (phrase.getInstrument() != NO_INSTRUMENT) instrument = phrase.getInstrument();
-      //        evt = createProgramChangeEvent(currChannel, instrument, phraseTick);
-      //        currTrack.add(evt);
-
-      //          if (pitch == Note.REST) {
-      //            phraseTick += note.getDuration() * m_ppqn * elementTempoRatio;
-      //            continue;
-      //          }
-
-      //          long onTick = (long)(phraseTick);
-      //           pan
-      //          if (note.getPan() != lastPanPosition) {
-      //            evt = createCChangeEvent(currChannel, 10, (int)(note.getPan()*127), onTick);
-      //            currTrack.add(evt);
-      //            lastPanPosition = note.getPan();
-      //          }
-
-      // add a meta event to indicate the end of the sequence.
-      // add a bit of time for reverb tail to fade if not cycling.
-      //    if (longestTime > 0.0 && longestTrack != null) {
-      //      MetaMessage msg = new MetaMessage();
-      //      byte [] data = new byte[0];
-      //      msg.setMessage(StopType, data, 0);
-      //      if (msCycle) {
-      //        MidiEvent evt = new MidiEvent(msg, (long)longestTime);
-      //        longestTrack.add(evt);
-      //      } else {
-      //        MidiEvent evt = new MidiEvent(msg, (long)(longestTime + 100)); //+ 100 if you want leave some space for reverb tail
-      //        longestTrack.add(evt);
-      //      }
-      //    }
+      // TODO let it be conditionally added
+      // Add a meta event to indicate the end of the track. There is already one when a track is created but it ends too soon.
+      // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
+      val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
+      val evt = new MidiEvent(msg, track.ticks + 4 * Resolution)
+      track.add(evt)
 
       sequence
     }
@@ -130,14 +100,21 @@ object MidiService {
   /**
    * Convert a MusicEvent to a list of MidiEvents
    *
-   * @param event
+   * @param event the event to convert
    * @return
    */
   private def eventToMidiEvents(event: MusicEvent): List[MidiEvent] = {
-    // TODO handle program and control changes
-    val ev1 = createNoteOnEvent(0, event.ePitch, event.eVol, event.eTime.longValue)
-    val ev2 = createNoteOffEvent(0, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
-    List(ev1.get, ev2.get)
+    // TODO set the channel
+    val ev1 = createProgramChangeEvent(0, event.eInst.id, event.eTime.longValue)
+    val ev2 = createNoteOnEvent(0, event.ePitch, event.eVol, event.eTime.longValue)
+    val ev3 = createNoteOffEvent(0, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
+    List(ev1, ev2, ev3).sequence match {
+      case Failure(exception) =>
+        handleError("MusicEvent", exception)
+        List.empty
+      case Success(events) =>
+        events
+    }
   }
 
   /**
@@ -246,21 +223,21 @@ object MidiService {
    *
    * @return true if the operation succeeded, false otherwise
    */
-  def init(): Boolean =
+  private def init(): Option[(Sequencer, Synthesizer)] =
     sequencer match {
-      case Failure(ex) => handleError("Sequencer", ex)
-      case _ => initSyntesizer()
+      case Failure(ex) =>
+        handleError("Sequencer", ex)
+        None
+      case Success(seq) =>
+        Try(seq.open()) match {
+          case Failure(ex) =>
+            handleError("Sequencer", ex)
+            None
+          case _ =>
+            initSyntesizer()
+              .map((seq, _))
+        }
     }
-
-  /**
-   * Teardown the Midi Service
-   *
-   * @return
-   */
-  def teardown(): Unit = {
-    sequencer.map(_.close())
-    synthesizer.map(_.close())
-  }
 
   /**
    * Check that the synthesizer has been properly
@@ -268,15 +245,29 @@ object MidiService {
    *
    * @return
    */
-  private def initSyntesizer(): Boolean = {
+  private def initSyntesizer(): Option[Synthesizer] = {
     synthesizer match {
-      case Failure(ex) => handleError("Synthesizer", ex)
-      case Success(value) =>
-        Try(value.open()) match {
-          case Failure(ex) => handleError("Synthesizer", ex)
-          case _ => true
+      case Failure(ex) =>
+        handleError("Synthesizer", ex)
+        None
+      case Success(synth) =>
+        Try(synth.open()) match {
+          case Failure(ex) =>
+            handleError("Synthesizer", ex)
+            None
+          case _ => Some(synth)
         }
     }
+  }
+
+  /**
+   * Teardown the Midi Service
+   *
+   * @return
+   */
+  private def teardown(): Unit = {
+    sequencer.map(_.close())
+    synthesizer.map(_.close())
   }
 
   /**
@@ -287,10 +278,8 @@ object MidiService {
    * @param ex     the exception
    * @return
    */
-  private def handleError(entity: String = "", ex: Throwable): Boolean = {
-    println(s"MidiSystem Unavailable: [$entity] ${ex.getMessage}")
-    false
-  }
+  private def handleError(entity: String = "", ex: Throwable): Unit =
+    println(s"Error: [$entity] ${ex.getMessage}")
 
 }
 
