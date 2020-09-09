@@ -73,11 +73,8 @@ object MidiService {
   private def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
     Try(new Sequence(Sequence.PPQ, Resolution))
       .map { sequence =>
-        for (i <- 0 to performances.size-1) {
-          val events: Seq[MidiEvent] =
-            performances(i)
-              .map(eventToMidiEvents(i, _))
-              .flatten
+        for (i <- performances.indices) {
+          val events: Seq[MidiEvent] = performances(i).flatMap(eventToMidiEvents(i, _))
           val track: Track = sequence.createTrack()
           for (ev <- events) {
             track.add(ev)
@@ -92,25 +89,25 @@ object MidiService {
         sequence
       }
 
-/**
- * Convert a MusicEvent to a list of MidiEvents
- *
- * @param channel the channel to which this event belongs
- * @param event   the event to convert
- * @return the list of MidiEvent
- */
-private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent] = {
-  val ev1 = createProgramChangeEvent (channel, event.eInst.id, event.eTime.longValue)
-  val ev2 = createNoteOnEvent (channel, event.ePitch, event.eVol, event.eTime.longValue)
-  val ev3 = createNoteOffEvent (channel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
-  List (ev1, ev2, ev3).sequence match {
-  case Failure (exception) =>
-  handleError ("MusicEvent", exception)
-  List.empty
-  case Success (events) =>
-  events
-}
-}
+  /**
+   * Convert a MusicEvent to a list of MidiEvents
+   *
+   * @param channel the channel to which this event belongs
+   * @param event   the event to convert
+   * @return the list of MidiEvent
+   */
+  private def eventToMidiEvents(channel: Int, event: MusicEvent): List[MidiEvent] = {
+    val ev1 = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
+    val ev2 = createNoteOnEvent(channel, event.ePitch, event.eVol, event.eTime.longValue)
+    val ev3 = createNoteOffEvent(channel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
+    List(ev1, ev2, ev3).sequence match {
+      case Failure(exception) =>
+        handleError("MusicEvent", exception)
+        List.empty
+      case Success(events) =>
+        events
+    }
+  }
 
   /**
    * Create a Note On Event
@@ -120,11 +117,11 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    * @param velocity is the velocity of the note
    * @param tick     is the time this event occurs
    */
-  private def createNoteOnEvent (channel: Int, pitch: Int, velocity: Int, tick: Long): Try[MidiEvent] =
-  Try {
-  val msg: ShortMessage = new ShortMessage (NOTE_ON, channel, pitch, velocity)
-  new MidiEvent (msg, tick)
-}
+  private def createNoteOnEvent(channel: Int, pitch: Int, velocity: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      val msg: ShortMessage = new ShortMessage(NOTE_ON, channel, pitch, velocity)
+      new MidiEvent(msg, tick)
+    }
 
   /**
    * Create a Note Off Event
@@ -134,11 +131,11 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    * @param velocity is the velocity of the note
    * @param tick     is the time this event occurs
    */
-  private def createNoteOffEvent (channel: Int, pitch: Int, velocity: Int, tick: Long): Try[MidiEvent] =
-  Try {
-  val msg: ShortMessage = new ShortMessage (NOTE_OFF, channel, pitch, velocity)
-  new MidiEvent (msg, tick)
-}
+  private def createNoteOffEvent(channel: Int, pitch: Int, velocity: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      val msg: ShortMessage = new ShortMessage(NOTE_OFF, channel, pitch, velocity)
+      new MidiEvent(msg, tick)
+    }
 
   /**
    * Create a Program Change Event
@@ -147,11 +144,11 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    * @param value   is the new value to use
    * @param tick    is the time this event occurs
    */
-  private def createProgramChangeEvent (channel: Int, value: Int, tick: Long): Try[MidiEvent] =
-  Try {
-  val msg: ShortMessage = new ShortMessage (PROGRAM_CHANGE, channel, value, 0)
-  new MidiEvent (msg, tick)
-}
+  private def createProgramChangeEvent(channel: Int, value: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      val msg: ShortMessage = new ShortMessage(PROGRAM_CHANGE, channel, value, 0)
+      new MidiEvent(msg, tick)
+    }
 
   /**
    * Create a Control Change event
@@ -161,11 +158,11 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    * @param value      is the value of the control change
    * @param tick       is the time this event occurs
    */
-  private def createCChangeEvent (channel: Int, controlNum: Int, value: Int, tick: Long): Try[MidiEvent] =
-  Try {
-  val msg: ShortMessage = new ShortMessage (CONTROL_CHANGE, channel, controlNum, value)
-  new MidiEvent (msg, tick)
-}
+  private def createCChangeEvent(channel: Int, controlNum: Int, value: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      val msg: ShortMessage = new ShortMessage(CONTROL_CHANGE, channel, controlNum, value)
+      new MidiEvent(msg, tick)
+    }
 
   //  /** Pulses per quarter note value */
   //  private short m_ppqn;
@@ -218,21 +215,21 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    *
    * @return true if the operation succeeded, false otherwise
    */
-  private def init (): Option[(Sequencer, Synthesizer)] =
-  sequencer match {
-  case Failure (ex) =>
-  handleError ("Sequencer", ex)
-  None
-  case Success (seq) =>
-  Try (seq.open () ) match {
-  case Failure (ex) =>
-  handleError ("Sequencer", ex)
-  None
-  case _ =>
-  initSyntesizer ()
-  .map ((seq, _) )
-}
-}
+  private def init(): Option[(Sequencer, Synthesizer)] =
+    sequencer match {
+      case Failure(ex) =>
+        handleError("Sequencer", ex)
+        None
+      case Success(seq) =>
+        Try(seq.open()) match {
+          case Failure(ex) =>
+            handleError("Sequencer", ex)
+            None
+          case _ =>
+            initSyntesizer()
+              .map((seq, _))
+        }
+    }
 
   /**
    * Check that the synthesizer has been properly
@@ -240,30 +237,30 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    *
    * @return
    */
-  private def initSyntesizer (): Option[Synthesizer] = {
-  synthesizer match {
-  case Failure (ex) =>
-  handleError ("Synthesizer", ex)
-  None
-  case Success (synth) =>
-  Try (synth.open () ) match {
-  case Failure (ex) =>
-  handleError ("Synthesizer", ex)
-  None
-  case _ => Some (synth)
-}
-}
-}
+  private def initSyntesizer(): Option[Synthesizer] = {
+    synthesizer match {
+      case Failure(ex) =>
+        handleError("Synthesizer", ex)
+        None
+      case Success(synth) =>
+        Try(synth.open()) match {
+          case Failure(ex) =>
+            handleError("Synthesizer", ex)
+            None
+          case _ => Some(synth)
+        }
+    }
+  }
 
   /**
    * Teardown the Midi Service
    *
    * @return
    */
-  private def teardown (): Unit = {
-  sequencer.map (_.close () )
-  synthesizer.map (_.close () )
-}
+  private def teardown(): Unit = {
+    sequencer.map(_.close())
+    synthesizer.map(_.close())
+  }
 
   /**
    * Handle a Java exception by printing
@@ -273,10 +270,10 @@ private def eventToMidiEvents (channel: Int, event: MusicEvent): List[MidiEvent]
    * @param ex     the exception
    * @return
    */
-  private def handleError (entity: String = "", ex: Throwable): Unit =
-  println (s"Error: [$entity] ${
-  ex.getMessage
-}")
+  private def handleError(entity: String = "", ex: Throwable): Unit =
+    println(s"Error: [$entity] ${
+      ex.getMessage
+    }")
 
 }
 
