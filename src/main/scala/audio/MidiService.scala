@@ -1,4 +1,4 @@
-package midi
+package audio
 
 import java.io.File
 import com.sun.media.sound.MidiUtils
