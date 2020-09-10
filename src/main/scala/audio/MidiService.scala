@@ -18,10 +18,6 @@ object MidiService {
   private val sequencer: Try[Sequencer] = Try(MidiSystem.getSequencer())
   private val synthesizer: Try[Synthesizer] = Try(MidiSystem.getSynthesizer())
 
-  //  val currentTempoBPM = 90
-  //  val ticksPerSecond = PulsesPerQuarterNote * (currentTempoBPM / 60.0)
-  //  val tickSize = 1.0 / ticksPerSecond
-
   /**
    * Store a music in a MIDI file
    *
