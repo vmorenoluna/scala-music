@@ -1,7 +1,6 @@
 package midi
 
 import java.io.File
-
 import com.sun.media.sound.MidiUtils
 import javax.sound.midi._
 import javax.sound.midi.ShortMessage._
@@ -15,35 +14,32 @@ import scala.util.{Failure, Success, Try}
  */
 object MidiService {
 
-  val Resolution = 96
+  val PulsesPerQuarterNote = 96
   private val sequencer: Try[Sequencer] = Try(MidiSystem.getSequencer())
   private val synthesizer: Try[Synthesizer] = Try(MidiSystem.getSynthesizer())
 
   //  val currentTempoBPM = 90
-  //  val ticksPerSecond = Resolution * (currentTempoBPM / 60.0)
+  //  val ticksPerSecond = PulsesPerQuarterNote * (currentTempoBPM / 60.0)
   //  val tickSize = 1.0 / ticksPerSecond
 
-  // TODO must accept a list of performances, so to use multiple instruments on the different channels/tracks
-  //  def writePerformance(performance: Performance, pathName: String): Unit = {
-  //    val events: Seq[MidiEvent] =
-  //      performance
-  //        .map(eventToMidiEvents)
-  //        .flatten
-  //
-  //    val sequence: Sequence = new Sequence(Sequence.PPQ, Resolution)
-  //    // TODO One track per Part
-  //    val track: Track = sequence.createTrack()
-  //    for (ev <- events)
-  //      track.add(ev)
-  //
-  //    val file = new File(pathName)
-  //    MidiSystem.write(sequence, 1, file)
-  //  }
+  /**
+   * Store a music in a MIDI file
+   *
+   * @param performances a list containing the performances that make the music
+   * @param pathName     path of the file
+   */
+  def writePerformance(performances: List[Performance], pathName: String): Unit =
+    performancesToMidiEvents(performances) match {
+      case Failure(exception) => handleError("performances", exception)
+      case Success(sequence) =>
+        val file = new File(pathName)
+        MidiSystem.write(sequence, 1, file)
+    }
 
   /**
    * Plays the performance via the JavaSound MIDI synthesizer
    *
-   * @param performance the performance to play
+   * @param performances a list containing the performances to play
    * @return
    */
   def play(performances: List[Performance]): Unit =
@@ -71,7 +67,7 @@ object MidiService {
    * @return Sequence to be played
    */
   private def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
-    Try(new Sequence(Sequence.PPQ, Resolution))
+    Try(new Sequence(Sequence.PPQ, PulsesPerQuarterNote))
       .map { sequence =>
         for (i <- performances.indices) {
           val events: Seq[MidiEvent] = performances(i).flatMap(eventToMidiEvents(i, _))
@@ -83,7 +79,7 @@ object MidiService {
           // Add a meta event to indicate the end of the track. There is already one when a track is created but it ends too soon.
           // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
           val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
-          val evt = new MidiEvent(msg, track.ticks + 4 * Resolution)
+          val evt = new MidiEvent(msg, track.ticks + 4 * PulsesPerQuarterNote)
           track.add(evt)
         }
         sequence
@@ -163,52 +159,6 @@ object MidiService {
       val msg: ShortMessage = new ShortMessage(CONTROL_CHANGE, channel, controlNum, value)
       new MidiEvent(msg, tick)
     }
-
-  //  /** Pulses per quarter note value */
-  //  private short m_ppqn;
-  //  /** The Synthesizer we are using */
-  //  private Synthesizer m_synth;
-  //  /** The Sequence we are using */
-  //  private Sequence m_seq;
-  //  /** The Sequencer we are using */
-  //  private Sequencer m_sequencer;
-
-  //  /**
-  //   * Plays back the already computed sequencer via a MIDI synthesizer
-  //   * @exception Exception
-  //   */
-  //  private void rePlay() {
-  //    if (null == m_sequencer) {
-  //      if (!initSynthesizer()) {
-  //        return;
-  //      }
-  //    }
-  //    if (update) {
-  //      System.out.println("Updating playback sequence");
-  //      //Sequence seq;
-  //      try {
-  //        m_seq = scoreToSeq(updateScore);
-  //        if (null != m_seq) {
-  //          try {
-  //            m_sequencer.open();
-  //          }
-  //          catch (MidiUnavailableException e) {
-  //            System.err.println("MIDI System Unavailable:" + e);
-  //            return;
-  //          }
-  //          m_sequencer.setSequence(m_seq);
-  //        }
-  //      } catch (InvalidMidiDataException e) {
-  //        System.err.println("MIDISynth updating sequence error:" + e);
-  //        return;
-  //      }
-  //      update = false;
-  //    }
-  //    m_sequencer.setMicrosecondPosition(0l);
-  //    m_sequencer.setTempoInBPM(m_masterTempo);
-  //    m_sequencer.start();
-  //  }
-  //
 
   /**
    * Init the Midi Service
