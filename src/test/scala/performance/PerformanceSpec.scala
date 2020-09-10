@@ -18,14 +18,14 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
     val c: Context[NoteWithAttributes] = buildContext()
     val m: MusicWithAttributes = (
       (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Rest[(Pitch, Volume)](hn)) :+: Prim(Note(qn, ((C, 5), 50)))) :=:
-        (Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(hn, ((C, 3), 30))))
+        (Prim(Rest[(Pitch, Volume)](qn)) :+: Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(qn, ((C, 3), 30))))
       ).toMusicWithAttributes()
 
     perform(c, m) should equal(
       List(
-        MusicEvent(0, AltoSax, 173, hn, 40, List()),
         MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(hn, AltoSax, 173, hn, 30, List()),
+        MusicEvent(qn, AltoSax, 173, hn, 40, List()),
+        MusicEvent(dhn, AltoSax, 173, qn, 30, List()),
         MusicEvent(dhn, AltoSax, 197, qn, 50, List())
       )
     )
