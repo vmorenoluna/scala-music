@@ -62,7 +62,7 @@ object MidiService {
    * @param performances the list of performances
    * @return Sequence to be played
    */
-  private def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
+  def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
     Try(new Sequence(Sequence.PPQ, PulsesPerQuarterNote))
       .map { sequence =>
         for (i <- performances.indices) {
@@ -72,7 +72,7 @@ object MidiService {
             track.add(ev)
           }
           // TODO let it be conditionally added
-          // Add a meta event to indicate the end of the track. There is already one when a track is created but it ends too soon.
+          // Add a meta event to indicate the end of the track.
           // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
           val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
           val evt = new MidiEvent(msg, track.ticks + 4 * PulsesPerQuarterNote)

@@ -4,7 +4,7 @@ import music.MusicWithAttributes.NoteWithAttributes
 import music.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
 import music.Types.{Duration, absPitch}
 import performance.{Context, MusicEvent}
-import performance.Performance.{DurT, Performance, perf}
+import performance.Performance.{TickedDuration, Performance, perf}
 
 /**
  * An enumeration of Players
@@ -38,7 +38,7 @@ trait Player[A] {
    * @param m   the music to interpret
    * @return a performance
    */
-  def interpretPhrase(c: Context[A], pas: List[PhraseAttribute], m: Music[A]): (Performance, DurT)
+  def interpretPhrase(c: Context[A], pas: List[PhraseAttribute], m: Music[A]): (Performance, TickedDuration)
 }
 
 object Player {
@@ -68,7 +68,7 @@ object DefaultPlayer extends Player[NoteWithAttributes] {
       case (_, _, ev) => ev
     }
 
-  override def interpretPhrase(c: Context[NoteWithAttributes], pas: List[PhraseAttribute], m: Music[NoteWithAttributes]): (Performance, DurT) = {
+  override def interpretPhrase(c: Context[NoteWithAttributes], pas: List[PhraseAttribute], m: Music[NoteWithAttributes]): (Performance, TickedDuration) = {
     val (pf, dur) = perf(c, m)
     (pas.foldRight(pf)(pasHandler), dur)
   }
