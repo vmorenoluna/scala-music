@@ -2,16 +2,14 @@ package performance
 
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
-import Metronome.metro
-import music.Music.qn
+import Metronome.tickedWholeNote
 
 class MetronomeSpec extends AnyFlatSpec with Matchers {
 
-  "metro" should "return the number of ticks in a second" in {
-    val bpm = 120
-    val beatNoteType = qn
+  val ticksPerQuarterNote = 96
 
-    metro(bpm, beatNoteType) should equal(192)
+  "tickedWholeNote" should "return the ticked duration of a whole note" in {
+    tickedWholeNote(ticksPerQuarterNote) should equal(4 * ticksPerQuarterNote)
   }
 
 }

@@ -3,27 +3,27 @@ package performance
 import music.InstrumentName.InstrumentName
 import music.Mode.Mode
 import music.Types.PitchClass.PitchClass
-import music.Types.{AbsPitch, Duration, Volume}
-import performance.Performance.{DurT, PTime}
+import music.Types.{AbsPitch, Volume}
+import performance.Performance.{TickedDuration, TickedTime}
 import performance.players.Player
 
 /**
  * The current context in a performance
  *
- * @param cTime   current time
+ * @param cTime   current time in ticks
  * @param cPlayer current player
  * @param cInst   current instrument
- * @param cDur    duration, in seconds, of one whole note  // TODO must be in ticks, this scales the actual duration in Performance.perf
+ * @param cDur    duration, in ticks, of one whole note
  * @param cPch    current pitch
  * @param cVol    current volume 0-127
  * @param cKey    current key
  * @tparam A
  */
 case class Context[A](
-                       cTime: PTime,
+                       cTime: TickedTime,
                        cPlayer: Player[A],
                        cInst: InstrumentName,
-                       cDur: DurT,
+                       cDur: TickedDuration,
                        cPch: AbsPitch,
                        cVol: Volume,
                        cKey: (PitchClass, Mode)

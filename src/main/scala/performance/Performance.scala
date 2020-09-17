@@ -9,8 +9,8 @@ import spire.math.Rational
 object Performance {
 
   type Performance = List[MusicEvent]
-  type PTime = Rational
-  type DurT = Rational
+  type TickedTime = Rational
+  type TickedDuration = Rational
 
   /**
    * Perform a Music starting with an initial Context
@@ -27,9 +27,9 @@ object Performance {
    *
    * @param c the initial context
    * @param m the music to perform
-   * @return  a tuple composed by the performance and its duration
+   * @return  a tuple composed by the performance and its ticked duration
    */
-  def perf(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, DurT) = m match {
+  def perf(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, TickedDuration) = m match {
     case Prim(Note(d, p)) => (c.cPlayer.playNote(c, d, p), d * c.cDur)
     case Prim(Rest(d)) => (List.empty, d * c.cDur)
     case :+:(m1, m2) => {

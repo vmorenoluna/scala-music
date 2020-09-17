@@ -2,12 +2,12 @@ package performance
 
 import music.InstrumentName.InstrumentName
 import music.Types.{AbsPitch, Volume}
-import performance.Performance.{DurT, PTime}
+import performance.Performance.{TickedDuration, TickedTime}
 
 /**
  * A music event
  *
- * @param eTime   onset time
+ * @param eTime   onset time in ticks
  * @param eInst   assigned instrument
  * @param ePitch  pitch value 0-127
  * @param eDur    note duration in ticks
@@ -15,10 +15,10 @@ import performance.Performance.{DurT, PTime}
  * @param eParams optional other parameters
  */
 case class MusicEvent(
-                   eTime: PTime,
-                   eInst: InstrumentName,
-                   ePitch: AbsPitch,
-                   eDur: DurT,
-                   eVol: Volume,
-                   eParams: List[Double]
+                       eTime: TickedTime,
+                       eInst: InstrumentName,
+                       ePitch: AbsPitch,
+                       eDur: TickedDuration,
+                       eVol: Volume,
+                       eParams: List[Double]
                  )

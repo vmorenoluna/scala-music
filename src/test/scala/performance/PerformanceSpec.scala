@@ -4,7 +4,7 @@ import music.InstrumentName.{AcousticGrandPiano, AltoSax}
 import music.Mode.{Major, Minor}
 import music.Music.{dhn, hn, qn, wn}
 import music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
-import music.Types.{Pitch, Volume}
+import music.Types.{Duration, Pitch, Volume}
 import music.{Accent, Art, CtrlTempo, Dyn, Instrument, KeySig, Modification, Note, Phrase, PhraseAttribute, Player, Prim, Rest, Staccato, Transpose}
 import music.Types.PitchClass.C
 import org.scalatest.Matchers
@@ -14,19 +14,21 @@ import performance.players.{DefaultPlayer, PlayersEnum}
 
 class PerformanceSpec extends AnyFlatSpec with Matchers {
 
+  val PulsesPerQuarterNote = 96
+
   "perform" should "perform a Music" in {
     val c: Context[NoteWithAttributes] = buildContext()
     val m: MusicWithAttributes = (
       (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Rest[(Pitch, Volume)](hn)) :+: Prim(Note(qn, ((C, 5), 50)))) :=:
-        (Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(hn, ((C, 3), 30))))
+        (Prim(Rest[(Pitch, Volume)](qn)) :+: Prim(Note(hn, ((C, 3), 40))) :+: Prim(Note(qn, ((C, 3), 30))))
       ).toMusicWithAttributes()
 
     perform(c, m) should equal(
       List(
-        MusicEvent(0, AltoSax, 173, hn, 40, List()),
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(hn, AltoSax, 173, hn, 30, List()),
-        MusicEvent(dhn, AltoSax, 197, qn, 50, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 173, toTicks(hn), 40, List()),
+        MusicEvent(toTicks(dhn), AltoSax, 173, toTicks(qn), 30, List()),
+        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 50, List())
       )
     )
   }
@@ -40,11 +42,11 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 173, hn, 40, List()),
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(hn, AltoSax, 173, hn, 30, List()),
-        MusicEvent(dhn, AltoSax, 197, qn, 50, List())
-      ), wn)
+        MusicEvent(0, AltoSax, 173, toTicks(hn), 40, List()),
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(hn), AltoSax, 173, toTicks(hn), 30, List()),
+        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 50, List())
+      ), toTicks(wn))
     )
   }
 
@@ -56,9 +58,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -70,9 +72,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 209, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AltoSax, 209, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -84,9 +86,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AcousticGrandPiano, 197, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AcousticGrandPiano, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -98,9 +100,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -113,9 +115,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 120, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 120, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -127,9 +129,9 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 209, qn, 80, List())
-      ), hn)
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, List()),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 80, List())
+      ), toTicks(hn))
     )
   }
 
@@ -192,7 +194,10 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
   private def buildContext(): Context[NoteWithAttributes] =
     Context(
-      0, DefaultPlayer, AltoSax, 1, 125, 60, (C, Major)
+      0, DefaultPlayer, AltoSax, 4 * PulsesPerQuarterNote, 125, 60, (C, Major)
     )
+
+  private def toTicks(duration: Duration): Int =
+    (duration * 4 * PulsesPerQuarterNote).intValue
 
 }
