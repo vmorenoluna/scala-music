@@ -7,8 +7,6 @@ import music.Types.PitchClass._
 import music.Types._
 import spire.math.Rational
 import spire.math.Rational.zero
-
-import scala.collection.immutable.LazyList.#::
 import scala.math.{max, min}
 
 /**
@@ -1150,6 +1148,10 @@ object Music {
   def rep[A](f: Music[A] => Music[A], g: Music[A] => Music[A], n: Int, m: Music[A]): Music[A] = n match {
     case 0 => rest(zero)
     case n => m :=: g(rep(f, g, n - 1, f(m)))
+  }
+
+  final implicit class MusicOps[A](private val self: Music[A]) {
+    def map[B](f: A => B): Music[B] = mMap(f, self)
   }
 
 }
