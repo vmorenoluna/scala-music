@@ -7,6 +7,7 @@ import javax.sound.midi.ShortMessage._
 import performance.MusicEvent
 import performance.Performance.Performance
 import cats.implicits._
+import music.InstrumentName.Percussion
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -14,9 +15,11 @@ import scala.util.{Failure, Success, Try}
  */
 object MidiService {
 
-  val PulsesPerQuarterNote = 96
-  private val sequencer: Try[Sequencer] = Try(MidiSystem.getSequencer())
+  private val pulsesPerQuarterNote = 96
+  private val soundfont: Try[Soundbank] = Try(MidiSystem.getSoundbank(Thread.currentThread().getContextClassLoader.getResourceAsStream("FluidR3_GM.sf2")))
+  private val sequencer: Try[Sequencer] = Try(MidiSystem.getSequencer(false))
   private val synthesizer: Try[Synthesizer] = Try(MidiSystem.getSynthesizer())
+  private val percussionChannel = 9
 
   /**
    * Store a music in a MIDI file
@@ -44,6 +47,7 @@ object MidiService {
       case Some(value) =>
         val sequencer = value._1
         sequencer.setTickPosition(0)
+        sequencer.setTempoInBPM(184) // TODO set it in the context
         sequencer.addMetaEventListener((metaMsg: MetaMessage) => {
           if (metaMsg.getType() == MidiUtils.META_END_OF_TRACK_TYPE) {
             teardown()
@@ -63,7 +67,7 @@ object MidiService {
    * @return Sequence to be played
    */
   def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
-    Try(new Sequence(Sequence.PPQ, PulsesPerQuarterNote))
+    Try(new Sequence(Sequence.PPQ, pulsesPerQuarterNote))
       .map { sequence =>
         for (i <- performances.indices) {
           val events: Seq[MidiEvent] = performances(i).flatMap(eventToMidiEvents(i, _))
@@ -75,7 +79,7 @@ object MidiService {
           // Add a meta event to indicate the end of the track.
           // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
           val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
-          val evt = new MidiEvent(msg, track.ticks + 4 * PulsesPerQuarterNote)
+          val evt = new MidiEvent(msg, track.ticks + 4 * pulsesPerQuarterNote)
           track.add(evt)
         }
         sequence
@@ -89,10 +93,18 @@ object MidiService {
    * @return the list of MidiEvent
    */
   private def eventToMidiEvents(channel: Int, event: MusicEvent): List[MidiEvent] = {
-    val ev1 = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
-    val ev2 = createNoteOnEvent(channel, event.ePitch, event.eVol, event.eTime.longValue)
-    val ev3 = createNoteOffEvent(channel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
-    List(ev1, ev2, ev3).sequence match {
+    val eventsList = event.eInst match {
+      case Percussion =>
+        val ev1 = createNoteOnEvent(percussionChannel, event.ePitch, event.eVol, event.eTime.longValue)
+        val ev2 = createNoteOffEvent(percussionChannel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
+        List(ev1, ev2).sequence
+      case _ =>
+        val ev1 = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
+        val ev2 = createNoteOnEvent(channel, event.ePitch, event.eVol, event.eTime.longValue)
+        val ev3 = createNoteOffEvent(channel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
+        List(ev1, ev2, ev3).sequence
+    }
+    eventsList match {
       case Failure(exception) =>
         handleError("MusicEvent", exception)
         List.empty
@@ -173,13 +185,12 @@ object MidiService {
             None
           case _ =>
             initSyntesizer()
-              .map((seq, _))
+              .flatMap(connectSeqToSynth(seq, _))
         }
     }
 
   /**
-   * Check that the synthesizer has been properly
-   * created and opens it.
+   * Initialise the synthesizer
    *
    * @return
    */
@@ -189,7 +200,11 @@ object MidiService {
         handleError("Synthesizer", ex)
         None
       case Success(synth) =>
-        Try(synth.open()) match {
+        Try {
+          synth.open()
+          synth.unloadAllInstruments(synth.getDefaultSoundbank())
+          synth.loadAllInstruments(soundfont.get)
+        } match {
           case Failure(ex) =>
             handleError("Synthesizer", ex)
             None
@@ -197,6 +212,24 @@ object MidiService {
         }
     }
   }
+
+  /**
+   * Connect the sequencer to the synthesizer
+   *
+   * @param seq   the sequencer
+   * @param synth the synthesizer
+   * @return
+   */
+  private def connectSeqToSynth(seq: Sequencer, synth: Synthesizer): Option[(Sequencer, Synthesizer)] =
+    Try {
+      seq.getTransmitter().setReceiver(synth.getReceiver())
+      (seq, synth)
+    } match {
+      case Failure(exception) =>
+        handleError("load soundfonts", exception)
+        None
+      case Success(value) => Some(value)
+    }
 
   /**
    * Teardown the Midi Service
