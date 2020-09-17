@@ -38,7 +38,7 @@ object SMusic {
       musicWithAttributes: MusicWithAttributes = part._2.toMusicWithAttributes()
     } yield perform(part._1, musicWithAttributes)
 
-    MidiService.writePerformance(performances, s"$pathName.mid")
+    MidiService.writePerformance(performances, s"$pathName")
   }
 
 }
