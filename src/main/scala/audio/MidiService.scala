@@ -1,6 +1,7 @@
 package audio
 
 import java.io.File
+
 import com.sun.media.sound.MidiUtils
 import javax.sound.midi._
 import javax.sound.midi.ShortMessage._
@@ -16,9 +17,6 @@ import scala.util.{Failure, Success, Try}
 object MidiService {
 
   private val pulsesPerQuarterNote = 96
-  private val soundfont: Try[Soundbank] = Try(MidiSystem.getSoundbank(Thread.currentThread().getContextClassLoader.getResourceAsStream("FluidR3_GM.sf2")))
-  private val sequencer: Try[Sequencer] = Try(MidiSystem.getSequencer(false))
-  private val synthesizer: Try[Synthesizer] = Try(MidiSystem.getSynthesizer())
   private val percussionChannel = 9
 
   /**
@@ -39,18 +37,21 @@ object MidiService {
    * Plays the performance via the JavaSound MIDI synthesizer
    *
    * @param performances a list containing the performances to play
+   * @param soundfontPath the filesystem path of the soundfont to use
    * @return
    */
-  def play(performances: List[Performance]): Unit =
-    init() match {
+  def play(performances: List[Performance], soundfontPath: String): Unit =
+    init(soundfontPath) match {
       case None => ()
       case Some(value) =>
         val sequencer = value._1
+        val synthesizer = value._2
         sequencer.setTickPosition(0)
         sequencer.setTempoInBPM(184) // TODO set it in the context
         sequencer.addMetaEventListener((metaMsg: MetaMessage) => {
           if (metaMsg.getType() == MidiUtils.META_END_OF_TRACK_TYPE) {
-            teardown()
+            sequencer.close()
+            synthesizer.close()
           }
         })
         performancesToMidiEvents(performances).map { sequence =>
@@ -171,47 +172,43 @@ object MidiService {
   /**
    * Init the Midi Service
    *
+   * @param soundfontPath the filesystem path of the soundfont to use
    * @return true if the operation succeeded, false otherwise
    */
-  private def init(): Option[(Sequencer, Synthesizer)] =
-    sequencer match {
+  private def init(soundfontPath: String): Option[(Sequencer, Synthesizer)] =
+    Try {
+      val sequencer: Sequencer = MidiSystem.getSequencer(false)
+      sequencer.open()
+      initSyntesizerWithSoundfont(soundfontPath)
+        .flatMap(connectSeqToSynth(sequencer, _))
+    } match {
       case Failure(ex) =>
-        handleError("Sequencer", ex)
+        handleError("Init", ex)
         None
-      case Success(seq) =>
-        Try(seq.open()) match {
-          case Failure(ex) =>
-            handleError("Sequencer", ex)
-            None
-          case _ =>
-            initSyntesizer()
-              .flatMap(connectSeqToSynth(seq, _))
-        }
+      case Success(value) => value
     }
 
   /**
    * Initialise the synthesizer
    *
+   * @param soundfontPath the filesystem path of the soundfont to use
    * @return
    */
-  private def initSyntesizer(): Option[Synthesizer] = {
-    synthesizer match {
-      case Failure(ex) =>
-        handleError("Synthesizer", ex)
+  private def initSyntesizerWithSoundfont(soundfontPath: String): Option[Synthesizer] =
+    Try {
+      val soundbank: Soundbank = MidiSystem.getSoundbank(new File(soundfontPath))
+      val synthesizer: Synthesizer = MidiSystem.getSynthesizer()
+      synthesizer.open()
+      synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank())
+      synthesizer.loadAllInstruments(soundbank)
+      synthesizer
+    } match {
+      case Failure(exception) =>
+        handleError("Synthesizer", exception)
         None
-      case Success(synth) =>
-        Try {
-          synth.open()
-          synth.unloadAllInstruments(synth.getDefaultSoundbank())
-          synth.loadAllInstruments(soundfont.get)
-        } match {
-          case Failure(ex) =>
-            handleError("Synthesizer", ex)
-            None
-          case _ => Some(synth)
-        }
+      case Success(value) =>
+        Some(value)
     }
-  }
 
   /**
    * Connect the sequencer to the synthesizer
@@ -232,25 +229,15 @@ object MidiService {
     }
 
   /**
-   * Teardown the Midi Service
-   *
-   * @return
-   */
-  private def teardown(): Unit = {
-    sequencer.map(_.close())
-    synthesizer.map(_.close())
-  }
-
-  /**
    * Handle a Java exception by printing
    * the error on the console
    *
-   * @param entity the midi entity that failed
-   * @param ex     the exception
+   * @param context the context of the failure
+   * @param ex      the exception
    * @return
    */
-  private def handleError(entity: String = "", ex: Throwable): Unit =
-    println(s"Error: [$entity] ${
+  private def handleError(context: String = "", ex: Throwable): Unit =
+    println(s"Error: [$context] ${
       ex.getMessage
     }")
 

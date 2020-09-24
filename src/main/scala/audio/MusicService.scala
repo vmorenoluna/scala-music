@@ -6,7 +6,7 @@ import music.Types.Pitch
 import performance.Context
 import performance.Performance.perform
 
-object SMusic {
+class MusicService(soundfontPath: String) {
 
   type Part = (Context[NoteWithAttributes], Music[Pitch])
 
@@ -22,7 +22,7 @@ object SMusic {
       musicWithAttributes: MusicWithAttributes = part._2.toMusicWithAttributes()
     } yield perform(part._1, musicWithAttributes)
 
-    MidiService.play(performances)
+    MidiService.play(performances, soundfontPath)
   }
 
   /**
