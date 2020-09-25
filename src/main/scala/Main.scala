@@ -11,7 +11,7 @@ import performance.{Context, Metronome}
 
 object Main extends App {
 
-  val soundfontPath : String = sys.env("SCALA_MUSIC_SOUNDFONT_PATH")
+  val soundfontPath : String = "FluidR3_GM.sf2"
   val musicService : MusicService = new MusicService(soundfontPath)
   val repetitions: Int = 8
   val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Metronome.tickedWholeNote(96), 0, 127, (C, Mode.Major))
