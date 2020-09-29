@@ -1,18 +1,20 @@
+package examples
+
 import audio.MusicService
-import music.InstrumentName._
+import music.InstrumentName.{AcousticBass, AcousticGrandPiano, Flute}
 import music.Music._
 import music.MusicWithAttributes.NoteWithAttributes
-import music.PercussionSound._
+import music.PercussionSound.{Claves, HiBongo, HighTimbale, LongGuiro, LowBongo, LowConga, LowTimbale, Maracas, MuteHiConga, ShortGuiro}
 import music.Types.Pitch
-import music.Types.PitchClass._
+import music.Types.PitchClass.C
 import music.{Mode, Music}
 import performance.players.DefaultPlayer
 import performance.{Context, Metronome}
 
-object Main extends App {
+object Mambo extends App {
 
-  val soundfontPath : String = "FluidR3_GM.sf2"
-  val musicService : MusicService = new MusicService(soundfontPath)
+  val soundfontPath: String = "FluidR3_GM.sf2"
+  val musicService: MusicService = new MusicService(soundfontPath)
   val repetitions: Int = 8
   val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Metronome.tickedWholeNote(96), 0, 127, (C, Mode.Major))
 
@@ -29,7 +31,7 @@ object Main extends App {
   )
 
   val bass: Music[Pitch] = times(repetitions,
-      c(2, dqn) :+: f(2, dqn) :+: g(2, qn + dqn) :+: f(2, dqn) :+: c(2, qn)
+    c(2, dqn) :+: f(2, dqn) :+: g(2, qn + dqn) :+: f(2, dqn) :+: c(2, qn)
   )
 
   val claves = percussion(Claves, _)
