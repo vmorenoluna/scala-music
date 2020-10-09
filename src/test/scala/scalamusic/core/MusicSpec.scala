@@ -1,9 +1,9 @@
-package scalamusic.music
+package scalamusic.core
 
-import scalamusic.music.InstrumentName.Violin
-import scalamusic.music.Music._
-import scalamusic.music.Types.PitchClass._
-import scalamusic.music.Types._
+import scalamusic.core.InstrumentName.Violin
+import scalamusic.core.Music._
+import scalamusic.core.Types.PitchClass._
+import scalamusic.core.Types._
 import spire.math.Rational
 
 class MusicSpec extends UnitSpec {

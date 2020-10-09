@@ -1,7 +1,7 @@
-package scalamusic.music
+package scalamusic.core
 
-import scalamusic.music.Types.PitchClass._
-import scalamusic.music.Types.{AbsPitch, Octave, Pitch}
+import scalamusic.core.Types.PitchClass._
+import scalamusic.core.Types.{AbsPitch, Octave, Pitch}
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.prop.{Generator, GeneratorDrivenPropertyChecks}

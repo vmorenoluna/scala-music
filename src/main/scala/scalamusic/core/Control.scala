@@ -1,9 +1,9 @@
-package scalamusic.music
+package scalamusic.core
 
-import scalamusic.music.InstrumentName.InstrumentName
-import scalamusic.music.Mode.Mode
-import scalamusic.music.Types.AbsPitch
-import scalamusic.music.Types.PitchClass.PitchClass
+import scalamusic.core.InstrumentName.InstrumentName
+import scalamusic.core.Mode.Mode
+import scalamusic.core.Types.AbsPitch
+import scalamusic.core.Types.PitchClass.PitchClass
 import scalamusic.performance.players.PlayersEnum.PlayersEnum
 import spire.math.Rational
 

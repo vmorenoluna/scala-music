@@ -1,7 +1,7 @@
 package scalamusic.performance
 
-import scalamusic.music.MusicWithAttributes.NoteWithAttributes
-import scalamusic.music._
+import scalamusic.core.MusicWithAttributes.NoteWithAttributes
+import scalamusic.core._
 import scalamusic.performance.players.Player.players
 import scalamusic.performance.players.DefaultPlayer
 import spire.math.Rational

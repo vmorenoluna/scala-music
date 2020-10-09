@@ -1,12 +1,12 @@
 package scalamusic.performance
 
-import scalamusic.music.Music.{hn, qn}
-import scalamusic.music.InstrumentName.AltoSax
-import scalamusic.music.Mode.Major
-import scalamusic.music.MusicWithAttributes._
-import scalamusic.music.Types.Duration
-import scalamusic.music.Types.PitchClass.C
-import scalamusic.music.{Accent, Art, Dyn, Dynamics, Fingering, Legato, Note, Params, PhraseAttribute, Prim, Staccato, Volume}
+import scalamusic.core.Music.{hn, qn}
+import scalamusic.core.InstrumentName.AltoSax
+import scalamusic.core.Mode.Major
+import scalamusic.core.MusicWithAttributes._
+import scalamusic.core.Types.Duration
+import scalamusic.core.Types.PitchClass.C
+import scalamusic.core.{Accent, Art, Dyn, Dynamics, Fingering, Legato, Note, Params, PhraseAttribute, Prim, Staccato, Volume}
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import scalamusic.performance.players.DefaultPlayer

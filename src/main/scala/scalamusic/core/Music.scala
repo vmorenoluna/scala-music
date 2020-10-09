@@ -1,10 +1,10 @@
-package scalamusic.music
+package scalamusic.core
 
-import scalamusic.music.InstrumentName.InstrumentName
-import scalamusic.music.Mode.Mode
-import scalamusic.music.Types.PitchClass.PitchClass
-import scalamusic.music.Types.PitchClass._
-import scalamusic.music.Types._
+import scalamusic.core.InstrumentName.InstrumentName
+import scalamusic.core.Mode.Mode
+import scalamusic.core.Types.PitchClass.PitchClass
+import scalamusic.core.Types.PitchClass._
+import scalamusic.core.Types._
 import spire.math.Rational
 import spire.math.Rational.zero
 import scala.math.{max, min}

@@ -1,7 +1,7 @@
-package scalamusic.music
+package scalamusic.core
 
-import scalamusic.music.Types.{Pitch, Volume}
-import scalamusic.music.Music.mMap
+import scalamusic.core.Types.{Pitch, Volume}
+import scalamusic.core.Music.mMap
 
 /**
  * An object to transform a Music to a MusicWithAttributes.

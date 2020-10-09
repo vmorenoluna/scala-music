@@ -8,7 +8,7 @@ import javax.sound.midi.ShortMessage._
 import scalamusic.performance.MusicEvent
 import scalamusic.performance.Performance.Performance
 import cats.implicits._
-import scalamusic.music.InstrumentName.Percussion
+import scalamusic.core.InstrumentName.Percussion
 import scala.util.{Failure, Success, Try}
 
 /**

@@ -1,8 +1,8 @@
 package scalamusic.audio
 
-import scalamusic.music.Music
-import scalamusic.music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
-import scalamusic.music.Types.Pitch
+import scalamusic.core.Music
+import scalamusic.core.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
+import scalamusic.core.Types.Pitch
 import scalamusic.performance.Context
 import scalamusic.performance.Performance.perform
 

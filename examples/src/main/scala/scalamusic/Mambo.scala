@@ -1,13 +1,13 @@
 package examples
 
 import scalamusic.audio.MusicService
-import scalamusic.music.InstrumentName.{AcousticBass, AcousticGrandPiano, Flute}
-import scalamusic.music.Music._
-import scalamusic.music.MusicWithAttributes.NoteWithAttributes
-import scalamusic.music.PercussionSound.{Claves, HiBongo, HighTimbale, LongGuiro, LowBongo, LowConga, LowTimbale, Maracas, MuteHiConga, ShortGuiro}
-import scalamusic.music.Types.Pitch
-import scalamusic.music.Types.PitchClass.C
-import scalamusic.music.{Mode, Music}
+import scalamusic.core.InstrumentName.{AcousticBass, AcousticGrandPiano, Flute}
+import scalamusic.core.Music._
+import scalamusic.core.MusicWithAttributes.NoteWithAttributes
+import scalamusic.core.PercussionSound.{Claves, HiBongo, HighTimbale, LongGuiro, LowBongo, LowConga, LowTimbale, Maracas, MuteHiConga, ShortGuiro}
+import scalamusic.core.Types.Pitch
+import scalamusic.core.Types.PitchClass.C
+import scalamusic.core.{Mode, Music}
 import scalamusic.performance.players.DefaultPlayer
 import scalamusic.performance.{Context, Metronome}
 

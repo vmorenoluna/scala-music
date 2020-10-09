@@ -1,8 +1,8 @@
 package scalamusic.performance.players
 
-import scalamusic.music.MusicWithAttributes.NoteWithAttributes
-import scalamusic.music.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
-import scalamusic.music.Types.{Duration, absPitch}
+import scalamusic.core.MusicWithAttributes.NoteWithAttributes
+import scalamusic.core.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
+import scalamusic.core.Types.{Duration, absPitch}
 import scalamusic.performance.{Context, MusicEvent}
 import scalamusic.performance.Performance.{TickedDuration, Performance, perf}
 

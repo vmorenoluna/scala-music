@@ -1,9 +1,9 @@
 package scalamusic.performance
 
-import scalamusic.music.InstrumentName.InstrumentName
-import scalamusic.music.Mode.Mode
-import scalamusic.music.Types.PitchClass.PitchClass
-import scalamusic.music.Types.{AbsPitch, Volume}
+import scalamusic.core.InstrumentName.InstrumentName
+import scalamusic.core.Mode.Mode
+import scalamusic.core.Types.PitchClass.PitchClass
+import scalamusic.core.Types.{AbsPitch, Volume}
 import scalamusic.performance.Performance.{TickedDuration, TickedTime}
 import scalamusic.performance.players.Player
 
