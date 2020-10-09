@@ -1,4 +1,4 @@
-package music
+package scalamusic.music
 
 /**
  * An enumeration of instruments

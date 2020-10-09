@@ -1,10 +1,10 @@
-package music
+package scalamusic.music
 
-import music.InstrumentName.InstrumentName
-import music.Mode.Mode
-import music.Types.PitchClass.PitchClass
-import music.Types.PitchClass._
-import music.Types._
+import scalamusic.music.InstrumentName.InstrumentName
+import scalamusic.music.Mode.Mode
+import scalamusic.music.Types.PitchClass.PitchClass
+import scalamusic.music.Types.PitchClass._
+import scalamusic.music.Types._
 import spire.math.Rational
 import spire.math.Rational.zero
 import scala.math.{max, min}
@@ -79,10 +79,10 @@ final case class Prim[A](primitive: Primitive[A]) extends Music[A]
 
 /**
  * The Modified Music of type `A`.
- * This type wraps a music of type `A` and a Control that describes the changes to apply on it.
+ * This type wraps a scalamusic.music of type `A` and a Control that describes the changes to apply on it.
  *
  * @param m the Music to modify
- * @param c the changes to apply to the music
+ * @param c the changes to apply to the scalamusic.music
  * @tparam A
  */
 final case class Modification[A](c: Control, m: Music[A]) extends Music[A]
@@ -128,7 +128,7 @@ object Music {
   /**
    * Scale the tempo of a Music of type `A` by a given factor.
    *
-   * @param d the factor by which the music will be scaled
+   * @param d the factor by which the scalamusic.music will be scaled
    * @param m the Music to modify
    * @tparam A
    * @return
@@ -952,7 +952,7 @@ object Music {
    *
    * @param interval the interval at which the trill must be played
    * @param d        the duration of the trill notes
-   * @param m        the music. It can be a single note or a Modification of a single note.
+   * @param m        the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def trill(interval: Int, d: Duration, m: Music[Pitch]): Music[Pitch] = (interval, d, m) match {
@@ -972,7 +972,7 @@ object Music {
    *
    * @param interval the interval at which the trill must be played
    * @param d        the duration of the trill notes
-   * @param m        the music. It can be a single note or a Modification of a single note.
+   * @param m        the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def trillOtherNote(interval: Int, d: Duration, m: Music[Pitch]): Music[Pitch] =
@@ -983,7 +983,7 @@ object Music {
    *
    * @param interval the interval at which the trill must be played
    * @param nTimes   how many subdivided notes to include in the trill
-   * @param m        the music. It can be a single note or a Modification of a single note.
+   * @param m        the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def trilln(interval: Int, nTimes: Int, m: Music[Pitch]): Music[Pitch] =
@@ -995,7 +995,7 @@ object Music {
    *
    * @param interval the interval at which the trill must be played
    * @param nTimes   how many subdivided notes to include in the trill
-   * @param m        the music. It can be a single note or a Modification of a single note.
+   * @param m        the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def trillnOtherNote(interval: Int, nTimes: Int, m: Music[Pitch]): Music[Pitch] =
@@ -1005,7 +1005,7 @@ object Music {
    * Define a roll. A roll is a trill with a zero interval.
    *
    * @param d the duration of the roll notes
-   * @param m the music. It can be a single note or a Modification of a single note.
+   * @param m the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def roll(d: Duration, m: Music[Pitch]): Music[Pitch] =
@@ -1015,7 +1015,7 @@ object Music {
    * Define a roll. A roll is a trill with a zero interval.
    *
    * @param nTimes how many subdivided notes to include in the roll
-   * @param m      the music. It can be a single note or a Modification of a single note.
+   * @param m      the scalamusic.music. It can be a single note or a Modification of a single note.
    * @return
    */
   def rolln(nTimes: Int, m: Music[Pitch]): Music[Pitch] =
@@ -1065,17 +1065,17 @@ object Music {
    * Convert a Music[Pitch] to a Music[(Pitch, Volume)]
    *
    * @param v the volume
-   * @param m the music
+   * @param m the scalamusic.music
    * @return
    */
   def addVolume(v: Volume, m: Music[Pitch]): Music[(Pitch, Volume)] =
     mMap[Pitch, (Pitch, Volume)](p => (p, v), m)
 
   /**
-   * Scale the volume of each note in a music by a given factor.
+   * Scale the volume of each note in a scalamusic.music by a given factor.
    *
    * @param s the scale factor
-   * @param m the music
+   * @param m the scalamusic.music
    * @return
    */
   def scaleVolume(s: Rational, m: Music[(Pitch, Volume)]): Music[(Pitch, Volume)] =
@@ -1113,7 +1113,7 @@ object Music {
    * Create triplets out of eight notes.
    * TODO make it more generic
    *
-   * @param m the music formed by eight notes
+   * @param m the scalamusic.music formed by eight notes
    * @tparam A
    * @return
    */
@@ -1121,12 +1121,12 @@ object Music {
     tempo(Rational(3) / Rational(2), m)
 
   /**
-   * Create a phase composition by repeating the music in parallel
+   * Create a phase composition by repeating the scalamusic.music in parallel
    * with itself.
    * TODO move to a transformation class
    *
    * @param factor the phase factor
-   * @param m      the music
+   * @param m      the scalamusic.music
    * @tparam A
    * @return
    */
@@ -1141,7 +1141,7 @@ object Music {
    * @param f transformation f
    * @param g transofrmation g
    * @param n number of times
-   * @param m the music 
+   * @param m the scalamusic.music
    * @tparam A
    * @return
    */

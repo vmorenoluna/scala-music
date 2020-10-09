@@ -1,7 +1,7 @@
-package music
+package scalamusic.music
 
-import music.Types.PitchClass._
-import music.Types._
+import scalamusic.music.Types.PitchClass._
+import scalamusic.music.Types._
 
 class TypesSpec extends UnitSpec {
 

@@ -1,15 +1,15 @@
 package examples
 
-import audio.MusicService
-import music.InstrumentName.{AcousticBass, AcousticGrandPiano, Flute}
-import music.Music._
-import music.MusicWithAttributes.NoteWithAttributes
-import music.PercussionSound.{Claves, HiBongo, HighTimbale, LongGuiro, LowBongo, LowConga, LowTimbale, Maracas, MuteHiConga, ShortGuiro}
-import music.Types.Pitch
-import music.Types.PitchClass.C
-import music.{Mode, Music}
-import performance.players.DefaultPlayer
-import performance.{Context, Metronome}
+import scalamusic.audio.MusicService
+import scalamusic.music.InstrumentName.{AcousticBass, AcousticGrandPiano, Flute}
+import scalamusic.music.Music._
+import scalamusic.music.MusicWithAttributes.NoteWithAttributes
+import scalamusic.music.PercussionSound.{Claves, HiBongo, HighTimbale, LongGuiro, LowBongo, LowConga, LowTimbale, Maracas, MuteHiConga, ShortGuiro}
+import scalamusic.music.Types.Pitch
+import scalamusic.music.Types.PitchClass.C
+import scalamusic.music.{Mode, Music}
+import scalamusic.performance.players.DefaultPlayer
+import scalamusic.performance.{Context, Metronome}
 
 object Mambo extends App {
 

@@ -1,16 +1,16 @@
-package performance
+package scalamusic.performance
 
-import music.InstrumentName.{AcousticGrandPiano, AltoSax}
-import music.Mode.{Major, Minor}
-import music.Music.{dhn, hn, qn, wn}
-import music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
-import music.Types.{Duration, Pitch, Volume}
-import music.{Accent, Art, CtrlTempo, Dyn, Instrument, KeySig, Modification, Note, Phrase, PhraseAttribute, Player, Prim, Rest, Staccato, Transpose}
-import music.Types.PitchClass.C
+import scalamusic.music.InstrumentName.{AcousticGrandPiano, AltoSax}
+import scalamusic.music.Mode.{Major, Minor}
+import scalamusic.music.Music.{dhn, hn, qn, wn}
+import scalamusic.music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
+import scalamusic.music.Types.{Duration, Pitch, Volume}
+import scalamusic.music.{Accent, Art, CtrlTempo, Dyn, Instrument, KeySig, Modification, Note, Phrase, PhraseAttribute, Player, Prim, Rest, Staccato, Transpose}
+import scalamusic.music.Types.PitchClass.C
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
-import performance.Performance.{Performance, merge, perf, perform}
-import performance.players.{DefaultPlayer, PlayersEnum}
+import scalamusic.performance.Performance.{Performance, merge, perf, perform}
+import scalamusic.performance.players.{DefaultPlayer, PlayersEnum}
 
 class PerformanceSpec extends AnyFlatSpec with Matchers {
 

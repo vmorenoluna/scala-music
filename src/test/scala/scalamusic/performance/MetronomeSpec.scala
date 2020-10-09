@@ -1,4 +1,4 @@
-package performance
+package scalamusic.performance
 
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec

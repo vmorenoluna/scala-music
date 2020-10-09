@@ -1,8 +1,8 @@
-package music
+package scalamusic.music
 
 import cats.kernel.{Eq, Order}
 import cats.syntax.eq._
-import music.Types.PitchClass.PitchClass
+import scalamusic.music.Types.PitchClass.PitchClass
 import spire.math.Rational
 
 import scala.math.Integral.Implicits._

@@ -1,10 +1,10 @@
-package music
+package scalamusic.music
 
-import music.InstrumentName.InstrumentName
-import music.Mode.Mode
-import music.Types.AbsPitch
-import music.Types.PitchClass.PitchClass
-import performance.players.PlayersEnum.PlayersEnum
+import scalamusic.music.InstrumentName.InstrumentName
+import scalamusic.music.Mode.Mode
+import scalamusic.music.Types.AbsPitch
+import scalamusic.music.Types.PitchClass.PitchClass
+import scalamusic.performance.players.PlayersEnum.PlayersEnum
 import spire.math.Rational
 
 sealed trait Control

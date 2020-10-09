@@ -1,4 +1,4 @@
-package performance
+package scalamusic.performance
 
 /**
  * An object with methods related to timing

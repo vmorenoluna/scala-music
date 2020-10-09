@@ -1,9 +1,9 @@
-package music
+package scalamusic.music
 
-import music.InstrumentName.Violin
-import music.Music._
-import music.Types.PitchClass._
-import music.Types._
+import scalamusic.music.InstrumentName.Violin
+import scalamusic.music.Music._
+import scalamusic.music.Types.PitchClass._
+import scalamusic.music.Types._
 import spire.math.Rational
 
 class MusicSpec extends UnitSpec {
@@ -51,7 +51,7 @@ class MusicSpec extends UnitSpec {
     )
   }
 
-  "times" should "repeat a music the specified amount of times" in {
+  "times" should "repeat a scalamusic.music the specified amount of times" in {
     val m: Music[Pitch] = c(4, qn) :+: d(4, qn) :+: e(4, qn)
     val n: Int = 2
 
@@ -96,7 +96,7 @@ class MusicSpec extends UnitSpec {
     )
   }
 
-  "offset" should "prepend a rest to the music" in {
+  "offset" should "prepend a rest to the scalamusic.music" in {
     val duration = wn
     val music = c(4, qn)
 
@@ -132,7 +132,7 @@ class MusicSpec extends UnitSpec {
     )
   }
 
-  "pitches" should "convert a line music to a list of pitches by applying a function to the original pitches in the Music" in {
+  "pitches" should "convert a line scalamusic.music to a list of pitches by applying a function to the original pitches in the Music" in {
     val music: Music[Pitch] = c(4, qn) :+: d(4, qn) :+: rest[Pitch](qn) :+: b(4, qn) :+: rest[Pitch](hn)
     val function: Pitch => Pitch = p => p.transpose(ws)
 
@@ -296,7 +296,7 @@ class MusicSpec extends UnitSpec {
     )
   }
 
-  "scaleVolume" should "scale the volume of each note in a music by a given factor" in {
+  "scaleVolume" should "scale the volume of each note in a scalamusic.music by a given factor" in {
     val music = Prim(Note(qn, ((C,4),8))) :+: Prim(Note(qn, ((D,4),8)))
 
     scaleVolume(Rational(1,2), music) should equal(

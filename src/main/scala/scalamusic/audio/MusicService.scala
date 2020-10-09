@@ -1,10 +1,10 @@
-package audio
+package scalamusic.audio
 
-import music.Music
-import music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
-import music.Types.Pitch
-import performance.Context
-import performance.Performance.perform
+import scalamusic.music.Music
+import scalamusic.music.MusicWithAttributes.{MusicWithAttributes, MusicWithAttributesOps, NoteWithAttributes}
+import scalamusic.music.Types.Pitch
+import scalamusic.performance.Context
+import scalamusic.performance.Performance.perform
 
 class MusicService(soundfontPath: String) {
 
@@ -12,7 +12,7 @@ class MusicService(soundfontPath: String) {
 
   /**
    * Play the given parts. Each part consists of a
-   * starting context and the music to play.
+   * starting context and the scalamusic.music to play.
    *
    * @param parts a list of Part
    */
@@ -27,7 +27,7 @@ class MusicService(soundfontPath: String) {
 
   /**
    * Write the given parts to a MIDI file. Each part consists of a
-   * starting context and the music to play.
+   * starting context and the scalamusic.music to play.
    *
    * @param parts    a list of Part
    * @param pathName path of the file

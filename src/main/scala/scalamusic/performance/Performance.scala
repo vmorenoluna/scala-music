@@ -1,9 +1,9 @@
-package performance
+package scalamusic.performance
 
-import music.MusicWithAttributes.NoteWithAttributes
-import music._
-import performance.players.Player.players
-import performance.players.DefaultPlayer
+import scalamusic.music.MusicWithAttributes.NoteWithAttributes
+import scalamusic.music._
+import scalamusic.performance.players.Player.players
+import scalamusic.performance.players.DefaultPlayer
 import spire.math.Rational
 
 object Performance {
@@ -16,8 +16,8 @@ object Performance {
    * Perform a Music starting with an initial Context
    *
    * @param c the initial context
-   * @param m the music to perform
-   * @return  the performance
+   * @param m the scalamusic.music to perform
+   * @return  the scalamusic.performance
    */
   def perform(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): Performance =
     perf(c, m)._1
@@ -26,8 +26,8 @@ object Performance {
    * Perform a Music starting with an initial Context
    *
    * @param c the initial context
-   * @param m the music to perform
-   * @return  a tuple composed by the performance and its ticked duration
+   * @param m the scalamusic.music to perform
+   * @return  a tuple composed by the scalamusic.performance and its ticked duration
    */
   def perf(c: Context[NoteWithAttributes], m: Music[NoteWithAttributes]): (Performance, TickedDuration) = m match {
     case Prim(Note(d, p)) => (c.cPlayer.playNote(c, d, p), d * c.cDur)
