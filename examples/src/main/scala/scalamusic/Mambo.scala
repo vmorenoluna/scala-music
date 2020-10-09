@@ -105,6 +105,6 @@ object Mambo extends App {
     )
 
   musicService.play(score)
-  musicService.write(score, "mambo.mid")
+  musicService.write(score, "Mambo.mid")
 
 }
