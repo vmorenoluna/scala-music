@@ -1,14 +1,14 @@
-package performance
+package scalamusic.performance
 
-import music.InstrumentName.InstrumentName
-import music.Mode.Mode
-import music.Types.PitchClass.PitchClass
-import music.Types.{AbsPitch, Volume}
-import performance.Performance.{TickedDuration, TickedTime}
-import performance.players.Player
+import scalamusic.core.InstrumentName.InstrumentName
+import scalamusic.core.Mode.Mode
+import scalamusic.core.Types.PitchClass.PitchClass
+import scalamusic.core.Types.{AbsPitch, Volume}
+import scalamusic.performance.Performance.{TickedDuration, TickedTime}
+import scalamusic.performance.players.Player
 
 /**
- * The current context in a performance
+ * The current context in a scalamusic.performance
  *
  * @param cTime   current time in ticks
  * @param cPlayer current player

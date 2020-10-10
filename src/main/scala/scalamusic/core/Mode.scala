@@ -1,4 +1,4 @@
-package music
+package scalamusic.core
 
 /**
  * An enumeration of modes

@@ -1,14 +1,14 @@
-package audio
+package scalamusic.audio
 
 import java.io.File
 
 import com.sun.media.sound.MidiUtils
 import javax.sound.midi._
 import javax.sound.midi.ShortMessage._
-import performance.MusicEvent
-import performance.Performance.Performance
+import scalamusic.performance.MusicEvent
+import scalamusic.performance.Performance.Performance
 import cats.implicits._
-import music.InstrumentName.Percussion
+import scalamusic.core.InstrumentName.Percussion
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -20,9 +20,9 @@ object MidiService {
   private val percussionChannel = 9
 
   /**
-   * Store a music in a MIDI file
+   * Store a scalamusic.music in a MIDI file
    *
-   * @param performances a list containing the performances that make the music
+   * @param performances a list containing the performances that make the scalamusic.music
    * @param pathName     path of the file
    */
   def writePerformance(performances: List[Performance], pathName: String): Unit =
@@ -34,7 +34,7 @@ object MidiService {
     }
 
   /**
-   * Plays the performance via the JavaSound MIDI synthesizer
+   * Plays the scalamusic.performance via the JavaSound MIDI synthesizer
    *
    * @param performances a list containing the performances to play
    * @param soundfontPath the filesystem path of the soundfont to use
@@ -62,7 +62,7 @@ object MidiService {
 
   /**
    * Converts a list of Performance into a MIDI Sequence.
-   * Each performance is added to a different track of the sequence.
+   * Each scalamusic.performance is added to a different track of the sequence.
    *
    * @param performances the list of performances
    * @return Sequence to be played

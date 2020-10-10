@@ -1,10 +1,10 @@
-package performance.players
+package scalamusic.performance.players
 
-import music.MusicWithAttributes.NoteWithAttributes
-import music.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
-import music.Types.{Duration, absPitch}
-import performance.{Context, MusicEvent}
-import performance.Performance.{TickedDuration, Performance, perf}
+import scalamusic.core.MusicWithAttributes.NoteWithAttributes
+import scalamusic.core.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
+import scalamusic.core.Types.{Duration, absPitch}
+import scalamusic.performance.{Context, MusicEvent}
+import scalamusic.performance.Performance.{TickedDuration, Performance, perf}
 
 /**
  * An enumeration of Players
@@ -15,7 +15,7 @@ object PlayersEnum extends Enumeration {
 }
 
 /**
- * A player that "knows" about differences with respect to performance and notation.
+ * A player that "knows" about differences with respect to scalamusic.performance and notation.
  *
  * @tparam A
  */
@@ -26,7 +26,7 @@ trait Player[A] {
    * @param c current context
    * @param d duration
    * @param a the note to interpret
-   * @return a performance made of a single event
+   * @return a scalamusic.performance made of a single event
    */
   def playNote(c: Context[A], d: Duration, a: A): Performance
 
@@ -35,8 +35,8 @@ trait Player[A] {
    *
    * @param c   current context
    * @param pas phrase attributes
-   * @param m   the music to interpret
-   * @return a performance
+   * @param m   the scalamusic.music to interpret
+   * @return a scalamusic.performance
    */
   def interpretPhrase(c: Context[A], pas: List[PhraseAttribute], m: Music[A]): (Performance, TickedDuration)
 }

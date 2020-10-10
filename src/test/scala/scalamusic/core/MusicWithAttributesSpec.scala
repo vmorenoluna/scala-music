@@ -1,9 +1,9 @@
-package music
+package scalamusic.core
 
-import music.Music._
-import music.Types.Pitch
-import music.MusicWithAttributes._
-import music.Types.PitchClass.{C, D}
+import scalamusic.core.Music._
+import scalamusic.core.Types.Pitch
+import scalamusic.core.MusicWithAttributes._
+import scalamusic.core.Types.PitchClass.{C, D}
 import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 

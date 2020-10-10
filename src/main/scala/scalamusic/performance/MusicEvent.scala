@@ -1,11 +1,11 @@
-package performance
+package scalamusic.performance
 
-import music.InstrumentName.InstrumentName
-import music.Types.{AbsPitch, Volume}
-import performance.Performance.{TickedDuration, TickedTime}
+import scalamusic.core.InstrumentName.InstrumentName
+import scalamusic.core.Types.{AbsPitch, Volume}
+import scalamusic.performance.Performance.{TickedDuration, TickedTime}
 
 /**
- * A music event
+ * A scalamusic.music event
  *
  * @param eTime   onset time in ticks
  * @param eInst   assigned instrument
