@@ -48,9 +48,11 @@ For example:
 - `qnr` - quarter note rest
 - `enr` - eighth note rest
 
+You can use ":+:" to define a sequence of notes, and ":=:" to define what has to be played at the same time. You can also wrap a music inside a [Modification](https://github.com/vmorenoluna/scala-music/blob/6492acb13f299480e0e4022bcb83af19ef874044/src/main/scala/scalamusic/core/Music.scala#L88) in order to modify it according to some [Control](scalamusic/core/Control.scala).
+
 See the _example_ folder for more examples.
 
-An alternative way to describe a music is by providing absolute pitches (i.e. numbers) and then convert them to Pitches using the _Types.pitch_ function. This can be useful for algorithmic composition.
+An alternative way to describe a music is by providing absolute pitches (i.e. numbers) and then convert them to Pitches using the [pitch](https://github.com/vmorenoluna/scala-music/blob/6492acb13f299480e0e4022bcb83af19ef874044/src/main/scala/scalamusic/core/Types.scala#L116) function. This can be useful for algorithmic composition.
 
 To play a music you must first create a service providing the path of the soundfont to use:
 
