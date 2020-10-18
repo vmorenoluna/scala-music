@@ -1068,7 +1068,7 @@ object Music {
    * @return
    */
   def addVolume(v: Volume, m: Music[Pitch]): Music[(Pitch, Volume)] =
-    m.map[(Pitch, Volume)](p => (p, v))
+    m.map(p => (p, v))
 
   /**
    * Scale the volume of each note in a scalamusic.music by a given factor.
@@ -1078,7 +1078,7 @@ object Music {
    * @return
    */
   def scaleVolume(s: Rational, m: Music[(Pitch, Volume)]): Music[(Pitch, Volume)] =
-    m.map[(Pitch, Volume)](f => (f._1, (s * Rational(f._2)).intValue))
+    m.map(f => (f._1, (s * Rational(f._2)).intValue))
 
   /**
    * A fold for the Music type. It takes four constructors and
