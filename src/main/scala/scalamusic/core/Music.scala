@@ -95,6 +95,47 @@ sealed trait Music[A] {
     case :=:(m1, m2) => m1.map(f) :=: m2.map(f)
   }
 
+  /**
+   * Scale the tempo of the Music by a given factor.
+   *
+   * @param d the factor by which the music will be scaled
+   * @return
+   */
+  def tempo(d: Duration): Music[A] = Modification(CtrlTempo(d), this)
+
+  /**
+   * Transpose the Music to a given absolute pitch.
+   *
+   * @param i the absolute pitch
+   * @return
+   */
+  def transpose(i: AbsPitch): Music[A] = Modification(Transpose(i), this)
+
+  /**
+   * Change the instrument of the Music.
+   *
+   * @param i the instrument
+   * @return
+   */
+  def instrument(i: InstrumentName): Music[A] = Modification(Instrument(i), this)
+
+  /**
+   * Apply a list of PhraseAttributes to the Music.
+   *
+   * @param pa the list of PhraseAttribute
+   * @return
+   */
+  def phrase(pa: List[PhraseAttribute]): Music[A] = Modification(Phrase(pa), this)
+
+  /**
+   * Change the key signature of the Music.
+   *
+   * @param pc the PitchClass
+   * @param mo the Mode
+   * @return
+   */
+  def keysig(pc: PitchClass, mo: Mode): Music[A] = Modification(KeySig(pc, mo), this)
+
 }
 
 /**
@@ -153,57 +194,6 @@ object Music {
    * @return
    */
   def rest[A](d: Duration): Prim[A] = Prim(Rest(d))
-
-  /**
-   * Scale the tempo of a Music of type `A` by a given factor.
-   *
-   * @param d the factor by which the scalamusic.music will be scaled
-   * @param m the Music to modify
-   * @tparam A
-   * @return
-   */
-  def tempo[A](d: Duration, m: Music[A]): Music[A] = Modification(CtrlTempo(d), m)
-
-  /**
-   * Transpose a Music of type `A` to a given absolute pitch.
-   *
-   * @param i the absolute pitch
-   * @param m the Music to transpose
-   * @tparam A
-   * @return
-   */
-  def transpose[A](i: AbsPitch, m: Music[A]): Music[A] = Modification(Transpose(i), m)
-
-  /**
-   * Change the instrument of a Music of type `A`.
-   *
-   * @param i the instrument
-   * @param m the Music
-   * @tparam A
-   * @return
-   */
-  def instrument[A](i: InstrumentName, m: Music[A]): Music[A] = Modification(Instrument(i), m)
-
-  /**
-   * Apply a list of PhraseAttributes to a Music of type `A`.
-   *
-   * @param pa the list of PhraseAttribute
-   * @param m  the Music
-   * @tparam A
-   * @return
-   */
-  def phrase[A](pa: List[PhraseAttribute], m: Music[A]): Music[A] = Modification(Phrase(pa), m)
-
-  /**
-   * Change the key signature of a Music of type `A`.
-   *
-   * @param pc the PitchClass
-   * @param mo the Mode
-   * @param m  the Music
-   * @tparam A
-   * @return
-   */
-  def keysig[A](pc: PitchClass, mo: Mode, m: Music[A]): Music[A] = Modification(KeySig(pc, mo), m)
 
   /**
    * Create a note of PitchClass Cff in the given octave and with
@@ -918,7 +908,7 @@ object Music {
     case _ if d <= 0 => rest(0)
     case Prim(Note(oldD, p)) => note(oldD min d, p)
     case Prim(Rest(oldD)) => rest(oldD min d)
-    case Modification(CtrlTempo(r), m) => tempo(r, cut(d * r, m))
+    case Modification(CtrlTempo(r), m) => cut(d * r, m).tempo(r)
     case Modification(c, m) => Modification(c, cut(d, m))
     case :+:(m1, m2) => {
       val m3 = cut[A](d, m1)
@@ -940,7 +930,7 @@ object Music {
     case _ if d <= 0 => m
     case Prim(Note(oldD, p)) => note((oldD - d) max 0, p)
     case Prim(Rest(oldD)) => rest((oldD - d) max 0)
-    case Modification(CtrlTempo(r), m) => tempo(r, remove(d * r, m))
+    case Modification(CtrlTempo(r), m) => remove(d * r, m).tempo(r)
     case Modification(c, m) => Modification(c, remove(d, m))
     case :+:(m1, m2) => {
       val m3 = remove[A](d, m1)
@@ -990,7 +980,7 @@ object Music {
         note(tDur, p)
       else
         note(sDur, p) :+: trill(-i, sDur, note(tDur - sDur, p.transpose(i)))
-    case (i, d, Modification(CtrlTempo(r), m)) => tempo(r, trill(i, d * r, m))
+    case (i, d, Modification(CtrlTempo(r), m)) => trill(i, d * r, m).tempo(r)
     case (i, d, Modification(c, m)) => Modification(c, trill(i, d, m))
     case _ => m
   }
@@ -1005,7 +995,7 @@ object Music {
    * @return
    */
   def trillOtherNote(interval: Int, d: Duration, m: Music[Pitch]): Music[Pitch] =
-    trill(-interval, d, transpose(interval, m))
+    trill(-interval, d, m.transpose(interval))
 
   /**
    * Add a trill note to a given note.
@@ -1028,7 +1018,7 @@ object Music {
    * @return
    */
   def trillnOtherNote(interval: Int, nTimes: Int, m: Music[Pitch]): Music[Pitch] =
-    trilln(-interval, nTimes, transpose(interval, m))
+    trilln(-interval, nTimes, m.transpose(interval))
 
   /**
    * Define a roll. A roll is a trill with a zero interval.
@@ -1058,7 +1048,7 @@ object Music {
    * @return
    */
   def percussion(ps: PercussionSound.Value, d: Duration): Music[Pitch] =
-    instrument(InstrumentName.Percussion, note(d, pitch(ps.id + 35)))
+    note(d, pitch(ps.id + 35)).instrument(InstrumentName.Percussion)
 
   /**
    * Convert a Music[Pitch] to a Music[(Pitch, Volume)]
@@ -1117,7 +1107,7 @@ object Music {
    * @return
    */
   def triplets[A](m: Music[A]): Music[A] =
-    tempo(Rational(3) / Rational(2), m)
+    m.tempo(Rational(3) / Rational(2))
 
   /**
    * Create a phase composition by repeating the scalamusic.music in parallel
@@ -1130,7 +1120,7 @@ object Music {
    * @return
    */
   def phaseIt[A](factor: Duration, m: Music[A]): Music[A] =
-    m :=: tempo(factor, m)
+    m :=: m.tempo(factor)
 
   /**
    * Recursively apply transformations f (to elements in a sequence)
