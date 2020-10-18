@@ -1,7 +1,6 @@
 package scalamusic.core
 
 import scalamusic.core.Types.{Pitch, Volume}
-import scalamusic.core.Music.mMap
 
 /**
  * An object to transform a Music to a MusicWithAttributes.
@@ -25,11 +24,11 @@ object MusicWithAttributes {
 
   implicit val ToMusicWithAttributesPitchInstance: ToMusicWithAttributesTypeClass[Pitch] = new ToMusicWithAttributesTypeClass[Pitch] {
     override def transform(m: Music[Pitch]): MusicWithAttributes =
-      mMap[Pitch, NoteWithAttributes](p => (p, List.empty[NoteAttribute]), m)
+      m.map(p => (p, List.empty[NoteAttribute]))
   }
   implicit val ToMusicWithAttributesPitchVolumeInstance: ToMusicWithAttributesTypeClass[(Pitch, Volume)] = new ToMusicWithAttributesTypeClass[(Pitch, Volume)] {
     override def transform(m: Music[(Pitch, Volume)]): MusicWithAttributes =
-      mMap[(Pitch, Volume), NoteWithAttributes](t => (t._1, List(Volume(t._2))), m)
+      m.map(t => (t._1, List(Volume(t._2))))
   }
   implicit val ToMusicWithAttributesInstance: ToMusicWithAttributesTypeClass[NoteWithAttributes] = new ToMusicWithAttributesTypeClass[NoteWithAttributes] {
     override def transform(m: Music[NoteWithAttributes]): MusicWithAttributes = m
