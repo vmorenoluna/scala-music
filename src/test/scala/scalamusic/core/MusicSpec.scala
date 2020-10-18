@@ -269,20 +269,20 @@ class MusicSpec extends UnitSpec {
     )
   }
 
-  "pMap" should "map the Primitive type" in {
+  "map" should "map the Primitive type" in {
     val note = Note(qn, (C, 4))
     val rest = Rest(qn)
     val f: Pitch => Pitch = pc => (pc._1, pc._2 + 1)
 
-    pMap(f, note) should equal(Note(qn, (C, 5)))
-    pMap(f, rest) should equal(rest)
+    note.map(f) should equal(Note(qn, (C, 5)))
+    rest.map(f) should equal(rest)
   }
 
-  "mMap" should "map the Music type" in {
+  "map" should "map the Music type" in {
     val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4, qn))
     val f: Pitch => Pitch = pc => (pc._1, pc._2 + 1)
 
-    mMap(f, music) should equal(
+    music.map(f) should equal(
       (c(5, qn) :+: Modification(Instrument(Violin), d(5, qn))) :=: (rest[Pitch](qn) :+: c(5, qn))
     )
   }

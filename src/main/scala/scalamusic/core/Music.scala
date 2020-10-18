@@ -15,7 +15,21 @@ import scala.math.{max, min}
  *
  * @tparam A
  */
-sealed trait Primitive[A]
+sealed trait Primitive[A] {
+
+  /**
+   * A map function for the Primitive type.
+   *
+   * @param f
+   * @tparam B
+   * @return
+   */
+  def map[B](f: A => B): Primitive[B] = this match {
+    case Note(d, x) => Note(d, f(x))
+    case Rest(d) => Rest(d)
+  }
+
+}
 
 /**
  * The Note Primitive of type `A`.
@@ -66,6 +80,21 @@ sealed trait Music[A] {
    * @return
    */
   def /=:(that: Music[A]): Music[A] = Music.cut(Music.duration(that), this) :=: Music.cut(Music.duration(this), that)
+
+  /**
+   * A map function for the Music type.
+   *
+   * @param f
+   * @tparam B
+   * @return
+   */
+  def map[B](f: A => B): Music[B] = this match {
+    case Prim(p) => Prim(p.map(f))
+    case Modification(c, m) => Modification(c, m.map(f))
+    case :+:(m1, m2) => m1.map(f) :+: m2.map(f)
+    case :=:(m1, m2) => m1.map(f) :=: m2.map(f)
+  }
+
 }
 
 /**
@@ -1032,36 +1061,6 @@ object Music {
     instrument(InstrumentName.Percussion, note(d, pitch(ps.id + 35)))
 
   /**
-   * A map function for the Primitive type.
-   *
-   * @param f
-   * @param p
-   * @tparam A
-   * @tparam B
-   * @return
-   */
-  def pMap[A, B](f: A => B, p: Primitive[A]): Primitive[B] = p match {
-    case Note(d, x) => Note(d, f(x))
-    case Rest(d) => Rest(d)
-  }
-
-  /**
-   * A map function for the Music type.
-   *
-   * @param f
-   * @param m
-   * @tparam A
-   * @tparam B
-   * @return
-   */
-  def mMap[A, B](f: A => B, m: Music[A]): Music[B] = m match {
-    case Prim(p) => Prim(pMap(f, p))
-    case Modification(c, m) => Modification(c, mMap(f, m))
-    case :+:(m1, m2) => mMap(f, m1) :+: mMap(f, m2)
-    case :=:(m1, m2) => mMap(f, m1) :=: mMap(f, m2)
-  }
-
-  /**
    * Convert a Music[Pitch] to a Music[(Pitch, Volume)]
    *
    * @param v the volume
@@ -1069,7 +1068,7 @@ object Music {
    * @return
    */
   def addVolume(v: Volume, m: Music[Pitch]): Music[(Pitch, Volume)] =
-    mMap[Pitch, (Pitch, Volume)](p => (p, v), m)
+    m.map[(Pitch, Volume)](p => (p, v))
 
   /**
    * Scale the volume of each note in a scalamusic.music by a given factor.
@@ -1079,7 +1078,7 @@ object Music {
    * @return
    */
   def scaleVolume(s: Rational, m: Music[(Pitch, Volume)]): Music[(Pitch, Volume)] =
-    mMap[(Pitch, Volume), (Pitch, Volume)](f => (f._1, (s * Rational(f._2)).intValue), m)
+    m.map[(Pitch, Volume)](f => (f._1, (s * Rational(f._2)).intValue))
 
   /**
    * A fold for the Music type. It takes four constructors and
@@ -1148,10 +1147,6 @@ object Music {
   def rep[A](f: Music[A] => Music[A], g: Music[A] => Music[A], n: Int, m: Music[A]): Music[A] = n match {
     case 0 => rest(zero)
     case n => m :=: g(rep(f, g, n - 1, f(m)))
-  }
-
-  final implicit class MusicOps[A](private val self: Music[A]) {
-    def map[B](f: A => B): Music[B] = mMap(f, self)
   }
 
 }
