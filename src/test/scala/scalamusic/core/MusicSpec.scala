@@ -100,7 +100,7 @@ class MusicSpec extends UnitSpec {
     val duration = wn
     val music = c(4, qn)
 
-    offset(duration, music) should equal(
+    music.offset(duration) should equal(
       rest[Pitch](duration) :+: music
     )
   }
