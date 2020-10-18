@@ -136,6 +136,52 @@ sealed trait Music[A] {
    */
   def keysig(pc: PitchClass, mo: Mode): Music[A] = Modification(KeySig(pc, mo), this)
 
+  /**
+   * Convert a Music[A] to a Music[(A, Volume)]
+   *
+   * @param v the volume
+   * @return
+   */
+  def addVolume(v: Volume): Music[(A, Volume)] =
+    this.map(p => (p, v))
+
+  /**
+   * A fold for the Music type. It takes four constructors and
+   * basically takes apart a Music value and puts it back together
+   * with different constructors.
+   *
+   * @param f
+   * @param +:
+   * @param =:
+   * @param g
+   * @tparam B
+   * @return
+   */
+  def fold[B](f: Primitive[A] => B)
+                 (+: : (B, B) => B)
+                 (=: : (B, B) => B)
+                 (g: (Control, B) => B): B = {
+    val rec: Music[A] => B = _.fold(f)(+:)(=:)(g)
+    this match {
+      case Prim(p) => f(p)
+      case Modification(c, m) => g(c, rec(m))
+      case :+:(m1, m2) => +:(rec(m1), rec(m2))
+      case :=:(m1, m2) => =:(rec(m1), rec(m2))
+    }
+  }
+
+  /**
+   * Compose a Music by sequentially repeating this Music for the
+   * given amount of times.
+   *
+   * @param n the number of repetitions
+   * @return
+   */
+  def times(n: Int): Music[A] = n match {
+    case 0 => Prim(Rest(0))
+    case n => this :+: this.times(n - 1)
+  }
+
 }
 
 /**
@@ -686,18 +732,13 @@ object Music {
     ds zip notes map { case (a, b) => b(a) }
 
   /**
-   * Compose a Music by sequentially repeating a given Music for the
-   * given amount of times.
+   * Scale the volume of each note in the Music by a given factor.
    *
-   * @param n the number of repetitions
-   * @param m the Music to repeat
-   * @tparam A
+   * @param s the scale factor
    * @return
    */
-  def times[A](n: Int, m: Music[A]): Music[A] = n match {
-    case 0 => rest(0)
-    case n => m :+: times(n - 1, m)
-  }
+  def scaleVolume(s: Rational, m: Music[(Pitch, Volume)]): Music[(Pitch, Volume)] =
+    m.map(f => (f._1, (s * Rational(f._2)).intValue))
 
   /**
    * Add a duration to a list of notes with unspecified duration.
@@ -1049,54 +1090,6 @@ object Music {
    */
   def percussion(ps: PercussionSound.Value, d: Duration): Music[Pitch] =
     note(d, pitch(ps.id + 35)).instrument(InstrumentName.Percussion)
-
-  /**
-   * Convert a Music[Pitch] to a Music[(Pitch, Volume)]
-   *
-   * @param v the volume
-   * @param m the scalamusic.music
-   * @return
-   */
-  def addVolume(v: Volume, m: Music[Pitch]): Music[(Pitch, Volume)] =
-    m.map(p => (p, v))
-
-  /**
-   * Scale the volume of each note in a scalamusic.music by a given factor.
-   *
-   * @param s the scale factor
-   * @param m the scalamusic.music
-   * @return
-   */
-  def scaleVolume(s: Rational, m: Music[(Pitch, Volume)]): Music[(Pitch, Volume)] =
-    m.map(f => (f._1, (s * Rational(f._2)).intValue))
-
-  /**
-   * A fold for the Music type. It takes four constructors and
-   * basically takes apart a Music value and puts it back together
-   * with different constructors.
-   *
-   * @param f
-   * @param +:
-   * @param =:
-   * @param g
-   * @param m
-   * @tparam A
-   * @tparam B
-   * @return
-   */
-  def mFold[A, B](f: Primitive[A] => B)
-                 (+: : (B, B) => B)
-                 (=: : (B, B) => B)
-                 (g: (Control, B) => B)
-                 (m: Music[A]): B = {
-    val rec: Music[A] => B = mFold(f)(+:)(=:)(g)
-    m match {
-      case Prim(p) => f(p)
-      case Modification(c, m) => g(c, rec(m))
-      case :+:(m1, m2) => +:(rec(m1), rec(m2))
-      case :=:(m1, m2) => =:(rec(m1), rec(m2))
-    }
-  }
 
   /**
    * Create triplets out of eight notes.

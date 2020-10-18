@@ -55,7 +55,7 @@ class MusicSpec extends UnitSpec {
     val m: Music[Pitch] = c(4, qn) :+: d(4, qn) :+: e(4, qn)
     val n: Int = 2
 
-    times(n, m) should equal(
+    m.times(n) should equal(
       (c(4, qn) :+: d(4, qn) :+: e(4, qn)) :+: ((c(4, qn) :+: d(4, qn) :+: e(4, qn)) :+: rest(0))
     )
   }
@@ -291,7 +291,7 @@ class MusicSpec extends UnitSpec {
     val music = c(4, qn) :+: d(4, qn)
     val volume = 5
 
-    addVolume(volume, music) should equal(
+    music.addVolume(volume) should equal(
       Prim(Note(qn, ((C,4),5))) :+: Prim(Note(qn, ((D,4),5)))
     )
   }
@@ -308,7 +308,7 @@ class MusicSpec extends UnitSpec {
     val f: Primitive[Pitch] => Music[Pitch] = p => Prim(p)
     val music = (c(4, qn) :+: Modification(Instrument(Violin), d(4, qn))) :=: (rest[Pitch](qn) :+: c(4, qn))
 
-    mFold(f)(:+:[Pitch])(:=:[Pitch])(Modification[Pitch])(music) should equal (music)
+    music.fold(f)(:+:[Pitch])(:=:[Pitch])(Modification[Pitch]) should equal (music)
   }
 
 }
