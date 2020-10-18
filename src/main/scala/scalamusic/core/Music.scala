@@ -79,7 +79,7 @@ sealed trait Music[A] {
    * @param that the parallel Music to cut with this
    * @return
    */
-  def /=:(that: Music[A]): Music[A] = Music.cut(Music.duration(that), this) :=: Music.cut(Music.duration(this), that)
+  def /=:(that: Music[A]): Music[A] = this.cut(that.duration()) :=: that.cut(this.duration())
 
   /**
    * A map function for the Music type.
@@ -180,6 +180,77 @@ sealed trait Music[A] {
   def times(n: Int): Music[A] = n match {
     case 0 => Prim(Rest(0))
     case n => this :+: this.times(n - 1)
+  }
+
+  /**
+   * Calculate the duration of this Music.
+   *
+   * @return
+   */
+  def duration(): Duration = this match {
+    case Prim(Note(d, _)) => d
+    case Prim(Rest(d)) => d
+    case Modification(CtrlTempo(r), m) => m.duration() / r
+    case Modification(_, m) => m.duration()
+    case :+:(m1, m2) => m1.duration() + m2.duration()
+    case :=:(m1, m2) => m1.duration() max m2.duration()
+  }
+
+  /**
+   * Cut the initial specified duration from this Music.
+   *
+   * @param d
+   * @return
+   */
+  def cut(d: Duration): Music[A] = this match {
+    case _ if d <= 0 => Prim(Rest(0))
+    case Prim(Note(oldD, p)) => Prim(Note(oldD min d, p))
+    case Prim(Rest(oldD)) => Prim(Rest(oldD min d))
+    case Modification(CtrlTempo(r), m) => m.cut(d * r).tempo(r)
+    case Modification(c, m) => Modification(c, m.cut(d))
+    case :+:(m1, m2) => {
+      val m3 = m1.cut(d)
+      val m4 = m2.cut(d - m3.duration())
+      m3 :+: m4
+    }
+    case :=:(m1, m2) => m1.cut(d) :=: m2.cut(d)
+  }
+
+  /**
+   * Remove the specified duration from this Music.
+   *
+   * @param d
+   * @return
+   */
+  def remove(d: Duration): Music[A] = this match {
+    case _ if d <= 0 => this
+    case Prim(Note(oldD, p)) => Prim(Note((oldD - d) max 0, p))
+    case Prim(Rest(oldD)) => Prim(Rest((oldD - d) max 0))
+    case Modification(CtrlTempo(r), m) => m.remove(d * r).tempo(r)
+    case Modification(c, m) => Modification(c, m.remove(d))
+    case :+:(m1, m2) => {
+      val m3 = m1.remove(d)
+      val m4 = m2.remove(d - m1.duration())
+      m3 :+: m4
+    }
+    case :=:(m1, m2) => m1.remove(d) :=: m2.remove(d)
+  }
+
+  /**
+   * Reverse this Music.
+   *
+   * @return
+   */
+  def retro(): Music[A] = this match {
+    case n: Prim[A] => n
+    case Modification(control, music) => Modification(control, music.retro())
+    case :+:(m1, m2) => m2.retro() :+: m1.retro()
+    case :=:(m1, m2) => {
+      val d1 = m1.duration()
+      val d2 = m2.duration()
+      if (d1 > d2) m1.retro() :=: (Prim(Rest[A](d1 - d2)) :+: m2.retro())
+      else (Prim(Rest[A](d2 - d1)) :+: m1.retro()) :=: m2.retro()
+    }
   }
 
 }
@@ -846,25 +917,6 @@ object Music {
   }
 
   /**
-   * Reverse a Music.
-   *
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def retro[A](m: Music[A]): Music[A] = m match {
-    case n: Prim[A] => n
-    case Modification(control, music) => Modification(control, retro(music))
-    case :+:(m1, m2) => retro(m2) :+: retro(m1)
-    case :=:(m1, m2) => {
-      val d1 = duration(m1)
-      val d2 = duration(m2)
-      if (d1 > d2) retro(m1) :=: (rest[A](d1 - d2) :+: retro(m2))
-      else (rest[A](d2 - d1) :+: retro(m1)) :=: retro(m2)
-    }
-  }
-
-  /**
    * Convert a Music to a list of Pitch, which have been obtained
    * by applying the given function to the original pitches in the Music.
    * The Music must have been generated with the line function: it should only have rests
@@ -919,66 +971,6 @@ object Music {
     case :+:(m, n) => transM(ap, m) :+: transM(ap, n)
     case :=:(m, n) => transM(ap, m) :=: transM(ap, n)
     case Modification(control, music) => Modification(control, transM(ap, music))
-  }
-
-  /**
-   * Calculate the duration of a Music.
-   *
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def duration[A](m: Music[A]): Duration = m match {
-    case Prim(Note(d, _)) => d
-    case Prim(Rest(d)) => d
-    case Modification(CtrlTempo(r), m) => duration(m) / r
-    case Modification(_, m) => duration(m)
-    case :+:(m1, m2) => duration(m1) + duration(m2)
-    case :=:(m1, m2) => duration(m1) max duration(m2)
-  }
-
-  /**
-   * Cut the initial specified duration from a Music.
-   *
-   * @param d
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def cut[A](d: Duration, m: Music[A]): Music[A] = m match {
-    case _ if d <= 0 => rest(0)
-    case Prim(Note(oldD, p)) => note(oldD min d, p)
-    case Prim(Rest(oldD)) => rest(oldD min d)
-    case Modification(CtrlTempo(r), m) => cut(d * r, m).tempo(r)
-    case Modification(c, m) => Modification(c, cut(d, m))
-    case :+:(m1, m2) => {
-      val m3 = cut[A](d, m1)
-      val m4 = cut[A](d - duration(m3), m2)
-      m3 :+: m4
-    }
-    case :=:(m1, m2) => cut(d, m1) :=: cut(d, m2)
-  }
-
-  /**
-   * Remove the specified duration from a Music.
-   *
-   * @param d
-   * @param m
-   * @tparam A
-   * @return
-   */
-  def remove[A](d: Duration, m: Music[A]): Music[A] = m match {
-    case _ if d <= 0 => m
-    case Prim(Note(oldD, p)) => note((oldD - d) max 0, p)
-    case Prim(Rest(oldD)) => rest((oldD - d) max 0)
-    case Modification(CtrlTempo(r), m) => remove(d * r, m).tempo(r)
-    case Modification(c, m) => Modification(c, remove(d, m))
-    case :+:(m1, m2) => {
-      val m3 = remove[A](d, m1)
-      val m4 = remove[A](d - duration(m1), m2)
-      m3 :+: m4
-    }
-    case :=:(m1, m2) => remove(d, m1) :=: remove(d, m2)
   }
 
   /**
@@ -1047,7 +1039,7 @@ object Music {
    * @return
    */
   def trilln(interval: Int, nTimes: Int, m: Music[Pitch]): Music[Pitch] =
-    trill(interval, duration(m) / Rational(nTimes), m)
+    trill(interval, m.duration() / Rational(nTimes), m)
 
   /**
    * Add a trill note to a given note.

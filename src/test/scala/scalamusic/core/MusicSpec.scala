@@ -126,7 +126,7 @@ class MusicSpec extends UnitSpec {
     val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
-    retro(music) should equal(
+    music.retro() should equal(
       (((c(5, qn) :+: g(4, qn)) :+: f(5, qn)) :+: b(4, qn)) :=:
         (rest[Pitch](dqn) :+: (d(5, qn) :+: as(4, qn)) :+: Modification(Instrument(Violin), g(5, en)))
     )
@@ -165,7 +165,7 @@ class MusicSpec extends UnitSpec {
     val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
-    duration(music) should equal(wn)
+    music.duration() should equal(wn)
   }
 
   "cut" should "cut the initial specified duration from a Music" in {
@@ -173,7 +173,7 @@ class MusicSpec extends UnitSpec {
     val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
-    cut(dqn, music) should equal(
+    music.cut(dqn) should equal(
       (b(4, qn) :+: Modification(CtrlTempo(2), g(4, qn)) :+: rest(0)) :=:
         (Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: rest(0))
     )
@@ -184,7 +184,7 @@ class MusicSpec extends UnitSpec {
     val m2 = Modification(Instrument(Violin), g(5, en)) :+: as(4, qn) :+: d(5, qn)
     val music: Music[Pitch] = m1 :=: m2
 
-    remove(dqn, music) should equal(
+    music.remove(dqn) should equal(
       (b(4, 0) :+: Modification(CtrlTempo(2), g(4, qn)) :+: c(5, qn)) :=:
         (Modification(Instrument(Violin), g(5, 0)) :+: as(4, 0) :+: d(5, qn))
     )
