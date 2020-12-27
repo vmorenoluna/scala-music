@@ -1,10 +1,11 @@
 package scalamusic.performance.players
 
 import scalamusic.core.MusicWithAttributes.NoteWithAttributes
-import scalamusic.core.{Accent, Art, Dyn, Legato, Music, NoteAttribute, Params, PhraseAttribute, Staccato, Volume}
+import scalamusic.core._
 import scalamusic.core.Types.{Duration, absPitch}
 import scalamusic.performance.{Context, MusicEvent}
-import scalamusic.performance.Performance.{TickedDuration, Performance, perf}
+import scalamusic.performance.Performance.{Performance, TickedDuration, perf}
+import spire.math.Rational
 
 /**
  * An enumeration of Players
@@ -12,6 +13,7 @@ import scalamusic.performance.Performance.{TickedDuration, Performance, perf}
 object PlayersEnum extends Enumeration {
   type PlayersEnum = Value
   val DefaultPlayer = Value
+  val FancyPlayer = Value
 }
 
 /**
@@ -43,7 +45,8 @@ trait Player[A] {
 
 object Player {
   val players = Map(
-    PlayersEnum.DefaultPlayer -> DefaultPlayer
+    PlayersEnum.DefaultPlayer -> DefaultPlayer,
+    PlayersEnum.FancyPlayer -> FancyPlayer
   ).withDefaultValue(DefaultPlayer)
 }
 
@@ -88,5 +91,75 @@ object DefaultPlayer extends Player[NoteWithAttributes] {
       case Art(Legato(x)) => p.map(e => e.copy(eDur = x.intValue * p.head.eDur))
       case _ => p
     }
+
+}
+
+object FancyPlayer extends Player[NoteWithAttributes] {
+
+  override def playNote(c: Context[NoteWithAttributes], d: Duration, n: NoteWithAttributes): Performance =
+    DefaultPlayer.playNote(c, d, n)
+
+  override def interpretPhrase(c: Context[NoteWithAttributes], pas: List[PhraseAttribute], m: Music[NoteWithAttributes]): (Performance, TickedDuration) = {
+
+    val pfd@(pf, dur) = interpretPhrase(c, pas, m)
+
+    val loud: StdLoudness => (Performance, TickedDuration) = l => {
+      val loudValue = l match {
+        case StdLoudness.PPP  => 40
+        case StdLoudness.PP   => 50
+        case StdLoudness.P    => 60
+        case StdLoudness.MP   => 70
+        case StdLoudness.SF   => 80
+        case StdLoudness.MF   => 90
+        case StdLoudness.NF   => 100
+        case StdLoudness.FF   => 110
+        case StdLoudness.FFF  => 120
+      }
+      interpretPhrase(c, Dyn(Loudness(loudValue)) :: pas, m)
+    }
+
+    val stretch: Rational => (Performance, TickedDuration) = x => {
+      val t0 = pf.head.eTime
+      val r = x / dur
+      val upd: MusicEvent => MusicEvent = e => {
+        val dt = e.eTime - t0
+        val t1 = (1 + dt*r) * dt + t0
+        val d1 = (1 + (2*dt + e.eDur) * r) * e.eDur
+        e.copy(eTime = t1, eDur = d1)
+      }
+      (pf.map(upd), (1 + x) * dur)
+    }
+
+    val inflate: Rational => (Performance, TickedDuration) = x => {
+      val t0 = pf.head.eTime
+      val r = x / dur
+      val upd: MusicEvent => MusicEvent = e => {
+        val dt = e.eTime - t0
+        val vol = (1 + dt*r) * e.eVol
+        e.copy(eVol = vol.intValue)
+      }
+      (pf.map(upd), dur)
+    }
+
+    pas.head match {
+      case Dyn(Accent(x))       => (pf.map(e => e.copy(eVol = x.intValue * e.eVol)), dur)
+      case Dyn(StdLoudness(l))  => loud(l)
+      case Dyn(Loudness(x))     => interpretPhrase(c.copy(cVol = x.intValue), pas, m)
+      case Dyn(Crescendo(x))    => inflate(x)
+      case Dyn(Diminuendo(x))   => inflate(-x)
+      case Tmp(Ritardando(x))   => stretch(x)
+      case Tmp(Accelerando(x))  => stretch(-x)
+      case Art(Staccato(x))     => (pf.map(e => e.copy(eDur = x.intValue * e.eDur)), dur)
+      case Art(Legato(x))       => (pf.map(e => e.copy(eDur = x.intValue * e.eDur)), dur)
+      case Art(Slurred(x))      => {
+        val lastStartTime = pf.foldRight(Rational.zero)((e ,t) => e.eTime max Rational(t))
+        val setDur: MusicEvent => MusicEvent = e => if (e.eTime < lastStartTime) e.copy(eDur = x.intValue * e.eDur) else e
+        (pf.map(setDur), dur)
+      }
+      case Art(_)               => pfd
+      case Orn(_)               => pfd
+    }
+
+  }
 
 }
