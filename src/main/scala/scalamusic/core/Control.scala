@@ -42,7 +42,7 @@ sealed trait Dynamic
 final case class Accent(value: Rational) extends Dynamic
 final case class Crescendo(value: Rational) extends Dynamic
 final case class Diminuendo(value: Rational) extends Dynamic
-final case class StdLoudness(value: StdLoudness) extends Dynamic
+final case class StandardLoudness(value: StdLoudness.Value) extends Dynamic
 final case class Loudness(value: Rational) extends Dynamic
 
 final object StdLoudness extends Enumeration {

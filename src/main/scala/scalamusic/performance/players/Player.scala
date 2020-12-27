@@ -103,7 +103,7 @@ object FancyPlayer extends Player[NoteWithAttributes] {
 
     val pfd@(pf, dur) = interpretPhrase(c, pas, m)
 
-    val loud: StdLoudness => (Performance, TickedDuration) = l => {
+    val loud: StdLoudness.Value => (Performance, TickedDuration) = l => {
       val loudValue = l match {
         case StdLoudness.PPP  => 40
         case StdLoudness.PP   => 50
@@ -143,7 +143,7 @@ object FancyPlayer extends Player[NoteWithAttributes] {
 
     pas.head match {
       case Dyn(Accent(x))       => (pf.map(e => e.copy(eVol = x.intValue * e.eVol)), dur)
-      case Dyn(StdLoudness(l))  => loud(l)
+      case Dyn(StandardLoudness(l))  => loud(l)
       case Dyn(Loudness(x))     => interpretPhrase(c.copy(cVol = x.intValue), pas, m)
       case Dyn(Crescendo(x))    => inflate(x)
       case Dyn(Diminuendo(x))   => inflate(-x)
