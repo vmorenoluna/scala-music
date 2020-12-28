@@ -192,10 +192,12 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
   }
 
-  private def buildContext(): Context[NoteWithAttributes] =
+  private def buildContext(): Context[NoteWithAttributes] = {
+    val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
     Context(
-      0, DefaultPlayer, AltoSax, 4 * PulsesPerQuarterNote, 125, 60, (C, Major)
+      0, DefaultPlayer, AltoSax, 4 * PulsesPerQuarterNote, 125, 60, (C, Major), timeSignature
     )
+  }
 
   private def toTicks(duration: Duration): Int =
     (duration * 4 * PulsesPerQuarterNote).intValue

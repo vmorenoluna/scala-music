@@ -17,6 +17,7 @@ import scalamusic.performance.players.Player
  * @param cPch    current pitch
  * @param cVol    current volume 0-127
  * @param cKey    current key
+ * @param cTimeSignature  current time signature
  * @tparam A
  */
 case class Context[A](
@@ -26,5 +27,6 @@ case class Context[A](
                        cDur: TickedDuration,
                        cPch: AbsPitch,
                        cVol: Volume,
-                       cKey: (PitchClass, Mode)
+                       cKey: (PitchClass, Mode),
+                       cTimeSignature: TimeSignature
                      )

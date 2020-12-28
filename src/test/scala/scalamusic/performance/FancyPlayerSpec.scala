@@ -188,9 +188,11 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
   private def buildContext(
                             cVol: Int = 60
-                          ): Context[NoteWithAttributes] =
+                          ): Context[NoteWithAttributes] = {
+    val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
     Context(
-      0, FancyPlayer, AltoSax, 1, 125, cVol, (C, Major)
+      0, FancyPlayer, AltoSax, 1, 125, cVol, (C, Major), timeSignature
     )
+  }
 
 }

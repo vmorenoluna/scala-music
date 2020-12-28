@@ -4,7 +4,7 @@ import org.scalatest.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import Metronome.tickedWholeNote
 
-class MetronomeSpec extends AnyFlatSpec with Matchers {
+class MeterSpec extends AnyFlatSpec with Matchers {
 
   val ticksPerQuarterNote = 96
 

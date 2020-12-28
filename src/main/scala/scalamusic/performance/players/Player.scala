@@ -58,7 +58,7 @@ object DefaultPlayer extends Player[NoteWithAttributes] {
       eInst = c.cInst,
       ePitch = absPitch(n._1) + c.cPch,
       eDur = d * c.cDur,
-      eVol = c.cVol,
+      eVol = c.cVol + c.cTimeSignature.pulse.calculateAccent(c.cTime, c.cTimeSignature.beatType, c.cTimeSignature.startTime),
       eParams = List.empty
     )
     List(n._2.foldRight(initEv)(nasHandler(c)))
