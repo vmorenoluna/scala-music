@@ -27,7 +27,7 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
     val c: Context[NoteWithAttributes] = buildContext()
     val pas: List[PhraseAttribute] = List(Dyn(Accent(2)), Art(Staccato(1)))
     val m: MusicWithAttributes =
-      (Prim(Note(qn, ((C, 5), 60))) :+: Prim(Note(qn, ((C, 5), 30)))).toMusicWithAttributes()
+      (Prim(Note(qn, (C, 5))) :+: Prim(Note(qn, (C, 5)))).toMusicWithAttributes()
 
     DefaultPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
