@@ -29,11 +29,11 @@ trait Pulse {
   protected val lightAccent: Int = 10
   protected val heavyAccent: Int = 20
 
-  def calculateAccent(t: TickedTime, startTime: TickedTime, beatType: Rational, ticksQN: Int = ticksPerQuarterNote): Int
+  def calculateAccent(t: TickedTime, beatType: Rational, startTime: TickedTime, ticksQN: Int = ticksPerQuarterNote): Int
 }
 
 final case class NoPulse() extends Pulse {
-  override def calculateAccent(t: TickedTime, startTime: TickedTime, beatType: TickedTime, ticksQN: Int = ticksPerQuarterNote): Int =
+  override def calculateAccent(t: TickedTime, beatType: Rational, startTime: TickedTime, ticksQN: Int = ticksPerQuarterNote): Int =
     noAccent
 }
 
@@ -54,11 +54,11 @@ final case class QuadruplePulse() extends Pulse {
    * @return
    */
   override def calculateAccent(t: TickedTime, beatType: Rational, startTime: TickedTime, ticksQN: Int = ticksPerQuarterNote): Int = {
-    val relativeTime: TickedTime = t - startTime
+    val relativeTime: Int = (t - startTime).intValue
     val ticksPerBeat: Rational = 4 * ticksQN * beatType
     val heavyAccentTick: Int = (ticksPerBeat / beatType).intValue
-    val lightAccentTick: Int = (heavyAccentTick + 2 * ticksPerBeat).intValue
-
+    val lightAccentTick: Int = (2 * ticksPerBeat).intValue
+    // TODO let the player pass the accent values, if they are random from a range it could sound more natural (so that everytime the accent is slightly different)
     if(relativeTime % heavyAccentTick == 0) {
       heavyAccent
     }
