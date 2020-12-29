@@ -7,8 +7,6 @@ import scalamusic.performance.{Context, MusicEvent, Accent => AccentEnum}
 import scalamusic.performance.Performance.{Performance, TickedDuration, perf}
 import spire.math.Rational
 
-import scala.util.Random
-
 /**
  * An enumeration of Players
  */
@@ -16,6 +14,7 @@ object PlayersEnum extends Enumeration {
   type PlayersEnum = Value
   val DefaultPlayer = Value
   val FancyPlayer = Value
+  val PulsePlayer = Value
 }
 
 /**
@@ -55,21 +54,12 @@ object Player {
 object DefaultPlayer extends Player[NoteWithAttributes] {
 
   override def playNote(c: Context[NoteWithAttributes], d: Duration, n: NoteWithAttributes): Performance = {
-    val rnd = new Random()
-    val pulsifiedVolume: Types.Volume = {
-      val accent = c.cTimeSignature.pulse.calculateAccent(c.cTime, c.cTimeSignature.beatType, c.cTimeSignature.startTime)
-      accent match {
-        case AccentEnum.NO_ACCENT => c.cVol
-        case AccentEnum.LIGHT_ACCENT => c.cVol + 5 + rnd.nextInt(4)
-        case AccentEnum.HEAVY_ACCENT => c.cVol + 10 + rnd.nextInt(4)
-      }
-    }
     val initEv = MusicEvent(
       eTime = c.cTime,
       eInst = c.cInst,
       ePitch = absPitch(n._1) + c.cPch,
       eDur = d * c.cDur,
-      eVol = pulsifiedVolume ,
+      eVol = c.cVol,
       eParams = List.empty
     )
     List(n._2.foldRight(initEv)(nasHandler(c)))
@@ -178,6 +168,41 @@ object FancyPlayer extends Player[NoteWithAttributes] {
 
       }
     }
+  }
+
+}
+
+object PulsePlayer extends Player[NoteWithAttributes] {
+
+  override def playNote(c: Context[NoteWithAttributes], d: Duration, n: NoteWithAttributes): Performance = {
+    val pulsifiedVolume: Types.Volume = {
+      val accent = c.cTimeSignature.pulse.calculateAccent(c.cTime, c.cTimeSignature.getTickedBeat(), c.cTimeSignature.startTime)
+      accent match {
+        case AccentEnum.NO_ACCENT => c.cVol
+        case AccentEnum.LIGHT_ACCENT => c.cVol + 7
+        case AccentEnum.HEAVY_ACCENT => c.cVol + 14
+      }
+    }
+    val initEv = MusicEvent(
+      eTime = c.cTime,
+      eInst = c.cInst,
+      ePitch = absPitch(n._1) + c.cPch,
+      eDur = d * c.cDur,
+      eVol = pulsifiedVolume ,
+      eParams = List.empty
+    )
+    List(n._2.foldRight(initEv)(nasHandler(c)))
+  }
+
+  private def nasHandler(c: Context[NoteWithAttributes])(na: NoteAttribute, ev: MusicEvent): MusicEvent =
+    (c, na, ev) match {
+      case (_, Volume(v), ev) => ev.copy(eVol = v)
+      case (_, Params(pms), ev) => ev.copy(eParams = pms)
+      case (_, _, ev) => ev
+    }
+
+  override def interpretPhrase(c: Context[NoteWithAttributes], pas: List[PhraseAttribute], m: Music[NoteWithAttributes]): (Performance, TickedDuration) = {
+    FancyPlayer.interpretPhrase(c, pas, m)
   }
 
 }

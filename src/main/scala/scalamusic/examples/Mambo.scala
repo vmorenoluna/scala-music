@@ -9,7 +9,7 @@ import scalamusic.core.Types.Pitch
 import scalamusic.core.Types.PitchClass.C
 import scalamusic.core.{Mode, Music}
 import scalamusic.performance.players.DefaultPlayer
-import scalamusic.performance.{Context, Metronome, NoPulse, TimeSignature}
+import scalamusic.performance.{Context, Meter, NoPulse, TimeSignature}
 
 object Mambo extends App {
 
@@ -17,7 +17,7 @@ object Mambo extends App {
   val musicService: MusicService = new MusicService(soundfontPath)
   val repetitions: Int = 8
   val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
-  val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Metronome.tickedWholeNote(96), 0, 127, (C, Mode.Major), timeSignature)
+  val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Meter.tickedWholeNote(96), 0, 127, (C, Mode.Major), timeSignature)
 
   val piano: Music[Pitch] = (
     (c(5, qn) :=: c(4, qn) :=: c(3, qn)) :+:
