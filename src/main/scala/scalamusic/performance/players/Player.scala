@@ -3,9 +3,11 @@ package scalamusic.performance.players
 import scalamusic.core.MusicWithAttributes.NoteWithAttributes
 import scalamusic.core._
 import scalamusic.core.Types.{Duration, absPitch}
-import scalamusic.performance.{Context, MusicEvent}
+import scalamusic.performance.{Context, MusicEvent, Accent => AccentEnum}
 import scalamusic.performance.Performance.{Performance, TickedDuration, perf}
 import spire.math.Rational
+
+import scala.util.Random
 
 /**
  * An enumeration of Players
@@ -53,12 +55,21 @@ object Player {
 object DefaultPlayer extends Player[NoteWithAttributes] {
 
   override def playNote(c: Context[NoteWithAttributes], d: Duration, n: NoteWithAttributes): Performance = {
+    val rnd = new Random()
+    val pulsifiedVolume: Types.Volume = {
+      val accent = c.cTimeSignature.pulse.calculateAccent(c.cTime, c.cTimeSignature.beatType, c.cTimeSignature.startTime)
+      accent match {
+        case AccentEnum.NO_ACCENT => c.cVol
+        case AccentEnum.LIGHT_ACCENT => c.cVol + 5 + rnd.nextInt(4)
+        case AccentEnum.HEAVY_ACCENT => c.cVol + 10 + rnd.nextInt(4)
+      }
+    }
     val initEv = MusicEvent(
       eTime = c.cTime,
       eInst = c.cInst,
       ePitch = absPitch(n._1) + c.cPch,
       eDur = d * c.cDur,
-      eVol = c.cVol + c.cTimeSignature.pulse.calculateAccent(c.cTime, c.cTimeSignature.beatType, c.cTimeSignature.startTime),
+      eVol = pulsifiedVolume ,
       eParams = List.empty
     )
     List(n._2.foldRight(initEv)(nasHandler(c)))
