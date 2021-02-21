@@ -889,6 +889,7 @@ object Music {
    */
   def lineToList[A](m: Music[A]): List[Music[A]] = m match {
     case Prim(Rest(d)) if d == 0 => List.empty
+    case Prim(Rest(d))  => List(Prim(Rest(d)))
     case Prim(Note(d, f)) => List(Prim(Note(d, f)))
     case :+:(n, ns) => n :: lineToList(ns)
     case _ => List.empty
@@ -1083,7 +1084,7 @@ object Music {
 
   /**
    * Create triplets out of eight notes.
-   * TODO make it more generic
+   * TODO make it more generic, change the duration rationals instead of leaving it to performance (can have both)
    *
    * @param m the scalamusic.music formed by eight notes
    * @tparam A
