@@ -2,11 +2,11 @@ package scalamusic.core
 
 import scalamusic.core.InstrumentName.InstrumentName
 import scalamusic.core.Mode.Mode
-import scalamusic.core.Types.PitchClass.PitchClass
-import scalamusic.core.Types.PitchClass._
+import scalamusic.core.Types.PitchClass.{PitchClass, _}
 import scalamusic.core.Types._
 import spire.math.Rational
 import spire.math.Rational.zero
+
 import scala.math.{max, min}
 
 /**
@@ -158,9 +158,9 @@ sealed trait Music[A] {
    * @return
    */
   def fold[B](f: Primitive[A] => B)
-                 (+: : (B, B) => B)
-                 (=: : (B, B) => B)
-                 (g: (Control, B) => B): B = {
+             (+: : (B, B) => B)
+             (=: : (B, B) => B)
+             (g: (Control, B) => B): B = {
     val rec: Music[A] => B = _.fold(f)(+:)(=:)(g)
     this match {
       case Prim(p) => f(p)
@@ -889,6 +889,7 @@ object Music {
    */
   def lineToList[A](m: Music[A]): List[Music[A]] = m match {
     case Prim(Rest(d)) if d == 0 => List.empty
+    case Prim(Rest(d)) => List(Prim(Rest(d)))
     case Prim(Note(d, f)) => List(Prim(Note(d, f)))
     case :+:(n, ns) => n :: lineToList(ns)
     case _ => List.empty
@@ -1083,7 +1084,7 @@ object Music {
 
   /**
    * Create triplets out of eight notes.
-   * TODO make it more generic
+   * TODO make it more generic, change the duration rationals instead of leaving it to performance (can have both)
    *
    * @param m the scalamusic.music formed by eight notes
    * @tparam A
