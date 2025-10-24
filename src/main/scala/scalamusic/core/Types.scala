@@ -15,6 +15,7 @@ object Types {
   type Octave = Int
   type AbsPitch = Int
   type Step = Int
+  type Velocity = Int
   type Volume = Int
   type Pitch = (PitchClass, Octave)
   type Duration = Rational
