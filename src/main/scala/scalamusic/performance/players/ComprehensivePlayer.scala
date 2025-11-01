@@ -130,7 +130,10 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
               pf.map(e =>
                 e.copy(
                   eDur = dFactor * e.eDur,
-                  eVel = (vFactor * e.eVel).round.intValue
+                  // Apply factor to Note Velocity (eVel) for instantaneous dynamic change
+                  eVel = (vFactor * e.eVel).round.intValue,
+                  // Apply factor to Channel Volume/Expression (eVol) for loudness baseline change
+                  eVol = (vFactor * e.eVol).round.intValue
                 )
               ),
               dur
