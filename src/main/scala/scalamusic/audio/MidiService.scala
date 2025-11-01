@@ -94,16 +94,18 @@ object MidiService {
    * @return the list of MidiEvent
    */
   private def eventToMidiEvents(channel: Int, event: MusicEvent): List[MidiEvent] = {
+    val MIDI_VOLUME_CONTROLLER_CHANNEL = 7
     val eventsList = event.eInst match {
       case Percussion =>
-        val ev1 = createNoteOnEvent(percussionChannel, event.ePitch, event.eVol, event.eTime.longValue)
-        val ev2 = createNoteOffEvent(percussionChannel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
+        val ev1 = createNoteOnEvent(percussionChannel, event.ePitch, event.eVel, event.eTime.longValue)
+        val ev2 = createNoteOffEvent(percussionChannel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
         List(ev1, ev2).sequence
       case _ =>
         val ev1 = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
-        val ev2 = createNoteOnEvent(channel, event.ePitch, event.eVol, event.eTime.longValue)
-        val ev3 = createNoteOffEvent(channel, event.ePitch, event.eVol, (event.eTime + event.eDur).longValue)
-        List(ev1, ev2, ev3).sequence
+        val ev2 = createControlChangeEvent(channel, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+        val ev3 = createNoteOnEvent(channel, event.ePitch, event.eVel, event.eTime.longValue)
+        val ev4 = createNoteOffEvent(channel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
+        List(ev1, ev2, ev3, ev4).sequence
     }
     eventsList match {
       case Failure(exception) =>
@@ -163,7 +165,7 @@ object MidiService {
    * @param value      is the value of the control change
    * @param tick       is the time this event occurs
    */
-  private def createCChangeEvent(channel: Int, controlNum: Int, value: Int, tick: Long): Try[MidiEvent] =
+  private def createControlChangeEvent(channel: Int, controlNum: Int, value: Int, tick: Long): Try[MidiEvent] =
     Try {
       val msg: ShortMessage = new ShortMessage(CONTROL_CHANGE, channel, controlNum, value)
       new MidiEvent(msg, tick)
