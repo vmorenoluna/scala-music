@@ -91,6 +91,8 @@ You can also save the score into a MIDI file:
 musicService.write(score, "Score.mid")
 ```
 
+**Note on playback**: Due to timing issues in Java's MIDI Sequencer, live playback via `musicService.play()` may occasionally experience timing glitches. For reliable, glitch-free playback, it's recommended to export to a MIDI file using `musicService.write()` and play it in an external MIDI player. See [MIDI_PLAYBACK_NOTES.md](MIDI_PLAYBACK_NOTES.md) for details.
+
 At this stage, there isn't support for all the MIDI features. Everything that is not yet supported is silently ignored when playing a song.
 
 # Credits
