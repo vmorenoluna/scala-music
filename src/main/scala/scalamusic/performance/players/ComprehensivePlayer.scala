@@ -10,6 +10,8 @@ import spire.math.Rational
 object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
 
   private val DEFAULT_DURATION_FACTOR: Rational = Rational(7, 8) // 0.875
+  // Maximum MIDI velocity value used as baseline for absolute dynamics
+  private val MAX_MIDI_VELOCITY: Int = 127
   // Staccato: Play for 1/4 or 1/3 of written duration
   private val STACCATO_DURATION: Rational = Rational(1, 4)
   // Legato: Play slightly longer than written duration for overlap
@@ -130,10 +132,10 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
               pf.map(e =>
                 e.copy(
                   eDur = dFactor * e.eDur,
-                  // Apply factor to current loudness for an absolute dynamic change
-                  eVel = (vFactor * c.cVol).round.intValue,
-                  // Apply factor to Channel Volume/Expression (eVol) for loudness baseline change
-                  eVol = (vFactor * e.eVol).round.intValue
+                  // Absolute dynamic: set velocity based on max MIDI velocity
+                  eVel = (vFactor * MAX_MIDI_VELOCITY).round.intValue,
+                  // Absolute dynamic: set volume based on max MIDI velocity
+                  eVol = (vFactor * MAX_MIDI_VELOCITY).round.intValue
                 )
               ),
               dur
