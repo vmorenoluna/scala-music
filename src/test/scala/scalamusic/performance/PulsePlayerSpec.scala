@@ -21,7 +21,7 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List(Volume(60), Fingering(25), Dynamics("ppp"), Params(List(1.5, 2.0))))
 
     PulsePlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 60, List(1.5, 2.0)))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 60, List(1.5, 2.0)))
     )
   }
 
@@ -32,16 +32,16 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List.empty)
 
     PulsePlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 74, List.empty))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 74, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 96), d, n) should equal(
-      List(MusicEvent(96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(96, AltoSax, 197, qn, 60, 60, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 2*96), d, n) should equal(
-      List(MusicEvent(2*96, AltoSax, 197, qn, 74, List.empty))
+      List(MusicEvent(2*96, AltoSax, 197, qn, 60, 74, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 3*96), d, n) should equal(
-      List(MusicEvent(3*96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(3*96, AltoSax, 197, qn, 60, 60, List.empty))
     )
   }
 
@@ -52,16 +52,16 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List.empty)
 
     PulsePlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 74, List.empty))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 74, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 96), d, n) should equal(
-      List(MusicEvent(96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(96, AltoSax, 197, qn, 60, 60, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 2*96), d, n) should equal(
-      List(MusicEvent(2*96, AltoSax, 197, qn, 67, List.empty))
+      List(MusicEvent(2*96, AltoSax, 197, qn, 60, 67, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 3*96), d, n) should equal(
-      List(MusicEvent(3*96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(3*96, AltoSax, 197, qn, 60, 60, List.empty))
     )
   }
 
@@ -72,13 +72,13 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List.empty)
 
     PulsePlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 74, List.empty))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 74, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 96), d, n) should equal(
-      List(MusicEvent(96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(96, AltoSax, 197, qn, 60, 60, List.empty))
     )
     PulsePlayer.playNote(c.copy(cTime = c.cTime + 2*96), d, n) should equal(
-      List(MusicEvent(2*96, AltoSax, 197, qn, 60, List.empty))
+      List(MusicEvent(2*96, AltoSax, 197, qn, 60, 60, List.empty))
     )
   }
 
@@ -90,8 +90,8 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 120, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List())
       ), hn)
     )
   }
@@ -104,8 +104,8 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 40, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 40, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 40, List()),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List())
       ), hn)
     )
   }
@@ -118,8 +118,8 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 40, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 40, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 40, List()),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List())
       ), hn)
     )
   }
@@ -132,9 +132,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 70, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 80, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 60, List()),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 70, List()),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List())
       ), dhn)
     )
   }
@@ -147,9 +147,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 100, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 80, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 100, List()),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List())
       ), dhn)
     )
   }
@@ -162,9 +162,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 24), 60, List()),
-        MusicEvent(Rational(7, 24), AltoSax, 197, Rational(3, 8), 60, List()),
-        MusicEvent(Rational(2, 3), AltoSax, 197, Rational(11, 24), 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 24), 60, 60, List()),
+        MusicEvent(Rational(7, 24), AltoSax, 197, Rational(3, 8), 60, 60, List()),
+        MusicEvent(Rational(2, 3), AltoSax, 197, Rational(11, 24), 60, 60, List())
       ), 9*en)
     )
   }
@@ -177,9 +177,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(5, 24), 60, List()),
-        MusicEvent(Rational(5, 24), AltoSax, 197, en, 60, List()),
-        MusicEvent(Rational(1, 3), AltoSax, 197, Rational(1, 24), 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(5, 24), 60, 60, List()),
+        MusicEvent(Rational(5, 24), AltoSax, 197, en, 60, 60, List()),
+        MusicEvent(Rational(1, 3), AltoSax, 197, Rational(1, 24), 60, 60, List())
       ), 3*en)
     )
   }
@@ -192,9 +192,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(1, 6), 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List()),
+        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List()),
+        MusicEvent(hn, AltoSax, 197, Rational(1, 6), 60, 60, List())
       ), dhn)
     )
   }
@@ -207,9 +207,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 60, List()),
+        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 60, List()),
+        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 60, List())
       ), dhn)
     )
   }
@@ -222,9 +222,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List()),
+        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List()),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 60, List())
       ), dhn)
     )
   }
@@ -237,9 +237,9 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
 
     PulsePlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 20), 120, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 120, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 120, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 120, List()),
+        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 120, List()),
+        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 120, List())
       ), dhn)
     )
   }
@@ -249,7 +249,7 @@ class PulsePlayerSpec extends AnyFlatSpec with Matchers {
                             cTimeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
                           ): Context[NoteWithAttributes] = {
     Context(
-      0, PulsePlayer, AltoSax, 1, 125, cVol, (C, Major), cTimeSignature
+      0, PulsePlayer, AltoSax, 1, 125, 60, cVol, (C, Major), cTimeSignature
     )
   }
 
