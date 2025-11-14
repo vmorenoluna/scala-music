@@ -76,9 +76,11 @@ final case class Wedge()                   extends Articulation
 final case class Thumb()                   extends Articulation
 final case class Stopped()                 extends Articulation
 final case class PerformancePreset(
-    // Factor to multiply MAX_MIDI_VELOCITY (127) by for absolute dynamics (affects both eVel and eVol)
+    // Factor to multiply the current eVel by (attack intensity/timbre)
     velocityFactor: Rational,
-    // Factor to multiply the current eDur by (Articulation)
+    // Factor to multiply the current eVol by (loudness envelope)
+    volumeFactor: Rational,
+    // Factor to multiply the current eDur by (note length)
     durationFactor: Rational
 ) extends Articulation
 

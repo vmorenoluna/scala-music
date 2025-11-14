@@ -10,8 +10,9 @@ import spire.math.Rational
 object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
 
   private val DEFAULT_DURATION_FACTOR: Rational = Rational(7, 8) // 0.875
-  // Maximum MIDI velocity value used as baseline for absolute dynamics
-  private val MAX_MIDI_VELOCITY: Int = 127
+  // MIDI value constraints
+  private val MAX_MIDI_VALUE: Int = 127
+  private val MIN_MIDI_VALUE: Int = 0
   // Staccato: Play for 1/4 or 1/3 of written duration
   private val STACCATO_DURATION: Rational = Rational(1, 4)
   // Legato: Play slightly longer than written duration for overlap
@@ -21,6 +22,16 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
   // Marcato: Needs a velocity increase and a duration decrease
   private val MARCATO_VELOCITY: Rational = Rational(5, 4) // 1.25 (25% louder)
   private val MARCATO_DURATION: Rational = Rational(1, 2) // half duration
+
+  /** Clamp a Rational value to valid MIDI range [0, 127]
+    *
+    * @param value the value to clamp
+    * @return the clamped integer value
+    */
+  private def clampMidi(value: Rational): Int = {
+    val intValue = value.round.intValue
+    Math.max(MIN_MIDI_VALUE, Math.min(MAX_MIDI_VALUE, intValue))
+  }
 
   /** Interpret a note
     *
@@ -85,6 +96,7 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
         }
 
         val stretch: Rational => (Performance, TickedDuration) = x => {
+          if (pf.isEmpty) return (pf, dur) // Handle empty performance
           val t0 = pf.head.eTime
           val r  = x / dur
           val upd: MusicEvent => MusicEvent = e => {
@@ -97,20 +109,21 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
         }
 
         val inflate: Rational => (Performance, TickedDuration) = x => {
+          if (pf.isEmpty) return (pf, dur) // Handle empty performance
           val t0 = pf.head.eTime
           val r  = x / dur
           val upd: MusicEvent => MusicEvent = e => {
             val dt  = e.eTime - t0
             val vol = (1 + dt * r) * e.eVol
-            e.copy(eVol = vol.round.intValue)
+            e.copy(eVol = clampMidi(vol))
           }
           (pf.map(upd), dur)
         }
 
         pa match {
-          case Dyn(Accent(x))           => (pf.map(e => e.copy(eVel = (x * e.eVel).round.intValue)), dur)
+          case Dyn(Accent(x))           => (pf.map(e => e.copy(eVel = clampMidi(x * e.eVel))), dur)
           case Dyn(StandardLoudness(l)) => loud(l)
-          case Dyn(Loudness(x))         => interpretPhrase(c.copy(cVol = x.round.intValue), pas, m)
+          case Dyn(Loudness(x))         => interpretPhrase(c.copy(cVol = clampMidi(x)), pas, m)
           case Dyn(Crescendo(x))        => inflate(x)
           case Dyn(Diminuendo(x))       => inflate(-x)
           case Tmp(Ritardando(x))       => stretch(x)
@@ -124,18 +137,18 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
           case Art(Tenuto()) => (pf.map(e => e.copy(eDur = TENUTO_DURATION * e.eDur)), dur)
           case Art(Marcato()) =>
             (
-              pf.map(e => e.copy(eDur = MARCATO_DURATION * e.eDur, eVel = (MARCATO_VELOCITY * e.eVel).round.intValue)),
+              pf.map(e => e.copy(eDur = MARCATO_DURATION * e.eDur, eVel = clampMidi(MARCATO_VELOCITY * e.eVel))),
               dur
             )
-          case Art(PerformancePreset(vFactor, dFactor)) =>
+          case Art(PerformancePreset(vFactor, volFactor, dFactor)) =>
             (
               pf.map(e =>
                 e.copy(
                   eDur = dFactor * e.eDur,
-                  // Absolute dynamic: set velocity based on max MIDI velocity
-                  eVel = (vFactor * MAX_MIDI_VELOCITY).round.intValue,
-                  // Absolute dynamic: set volume based on max MIDI velocity
-                  eVol = (vFactor * MAX_MIDI_VELOCITY).round.intValue
+                  // Relative dynamic: multiply current velocity by factor
+                  eVel = clampMidi(vFactor * e.eVel),
+                  // Relative dynamic: multiply current volume by factor
+                  eVol = clampMidi(volFactor * e.eVol)
                 )
               ),
               dur
