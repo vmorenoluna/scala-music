@@ -43,17 +43,27 @@ object MidiService {
       case Some(value) =>
         val sequencer   = value._1
         val synthesizer = value._2
-        sequencer.setTickPosition(0)
-        sequencer.setTempoInBPM(184) // TODO set it in the context
+
+        // Use a flag to track when playback is complete
+        @volatile var isPlaying = true
+
         sequencer.addMetaEventListener((metaMsg: MetaMessage) => {
           if (metaMsg.getType() == MidiUtils.META_END_OF_TRACK_TYPE) {
             sequencer.close()
             synthesizer.close()
+            isPlaying = false
           }
         })
         performancesToMidiEvents(performances).map { sequence =>
           sequencer.setSequence(sequence)
+          sequencer.setTickPosition(0)
+          sequencer.setTempoInBPM(184) // TODO set it in the context
           sequencer.start()
+
+          // Block until playback is complete
+          while (isPlaying) {
+            Thread.sleep(100)
+          }
         }
     }
 
