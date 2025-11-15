@@ -19,7 +19,7 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List(Volume(60), Fingering(25), Dynamics("ppp"), Params(List(1.5, 2.0))))
 
     DefaultPlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 60, 60, List(1.5, 2.0)))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 60, List(1.5, 2.0), 120))
     )
   }
 
@@ -31,8 +31,8 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
 
     DefaultPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List(), 120)
       ), hn)
     )
   }
@@ -45,8 +45,8 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
 
     DefaultPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List(), 120)
       ), hn)
     )
   }
@@ -54,7 +54,7 @@ class DefaultPlayerSpec extends AnyFlatSpec with Matchers {
   private def buildContext(): Context[NoteWithAttributes] = {
     val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
     Context(
-      0, DefaultPlayer, AltoSax, 1, 125, 60, 60, (C, Major), timeSignature
+      0, DefaultPlayer, AltoSax, 1, 125, 60, 60, (C, Major), timeSignature, 120
     )
   }
 

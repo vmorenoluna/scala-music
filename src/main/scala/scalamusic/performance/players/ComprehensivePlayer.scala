@@ -54,7 +54,8 @@ object ComprehensivePlayer extends players.Player[NoteWithAttributes] {
       eDur = initialEffectiveDur,       // Effective duration (will be post-processed by Articulations)
       eVel = initialVel,                // Initial velocity (will be post-processed by Dynamics/Accents)
       eVol = c.cVol,
-      eParams = List.empty
+      eParams = List.empty,
+      eTempo = c.cTempo
     )
 
     // A Performance is a list of MusicEvents

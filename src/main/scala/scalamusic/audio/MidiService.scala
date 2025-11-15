@@ -57,7 +57,6 @@ object MidiService {
         performancesToMidiEvents(performances).map { sequence =>
           sequencer.setSequence(sequence)
           sequencer.setTickPosition(0)
-          sequencer.setTempoInBPM(184) // TODO set it in the context
           sequencer.start()
 
           // Block until playback is complete
@@ -76,9 +75,20 @@ object MidiService {
   def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
     Try(new Sequence(Sequence.PPQ, pulsesPerQuarterNote))
       .map { sequence =>
+        // Collect all tempo changes across all performances
+        val tempoChanges = collectTempoChanges(performances)
+
         for (i <- performances.indices) {
           val events: Seq[MidiEvent] = performances(i).flatMap(eventToMidiEvents(i, _))
           val track: Track           = sequence.createTrack()
+
+          // Add tempo changes to the first track only (MIDI convention)
+          if (i == 0) {
+            for ((tick, tempo) <- tempoChanges) {
+              createTempoChangeEvent(tempo, tick).foreach(track.add)
+            }
+          }
+
           for (ev <- events) {
             track.add(ev)
           }
@@ -197,6 +207,58 @@ object MidiService {
       val msg: ShortMessage = new ShortMessage(CONTROL_CHANGE, channel, controlNum, value)
       new MidiEvent(msg, tick)
     }
+
+  /** Create a Tempo Change meta event
+    *
+    * @param bpm  the tempo in beats per minute
+    * @param tick the time this event occurs
+    * @return the MidiEvent containing the tempo change
+    */
+  private def createTempoChangeEvent(bpm: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      // MIDI tempo is specified in microseconds per quarter note
+      val microsecondsPerQuarterNote = (60000000.0 / bpm).toInt
+
+      // Convert to 3-byte big-endian format
+      val data = Array[Byte](
+        ((microsecondsPerQuarterNote >> 16) & 0xFF).toByte,
+        ((microsecondsPerQuarterNote >> 8) & 0xFF).toByte,
+        (microsecondsPerQuarterNote & 0xFF).toByte
+      )
+
+      val msg = new MetaMessage(0x51, data, 3) // 0x51 is the MIDI meta event type for tempo
+      new MidiEvent(msg, tick)
+    }
+
+  /** Collect all tempo changes from performances
+    *
+    * @param performances the list of performances
+    * @return a sorted list of (tick, tempo) pairs with duplicates removed
+    */
+  private def collectTempoChanges(performances: List[Performance]): List[(Long, Int)] = {
+    val tempoMap = scala.collection.mutable.Map[Long, Int]()
+
+    for {
+      performance <- performances
+      event <- performance
+    } {
+      val tick = event.eTime.longValue
+      val tempo = event.eTempo
+
+      // Only add if this tick doesn't have a tempo yet, or update if different
+      tempoMap.get(tick) match {
+        case Some(existingTempo) if existingTempo != tempo =>
+          // If there's a conflict, we could log a warning, but for now just keep the first one
+          ()
+        case None =>
+          tempoMap(tick) = tempo
+        case _ => ()
+      }
+    }
+
+    // Return sorted by tick
+    tempoMap.toList.sortBy(_._1)
+  }
 
   /** Init the Midi Service
     *

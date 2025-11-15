@@ -63,10 +63,10 @@ val musicService: MusicService = new MusicService(soundfontPath)
 You must also declare a starting [Context](src/main/scala/scalamusic/performance/Context.scala) for your music:
 
 ```scala
-val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Metronome.tickedWholeNote(96), 0, 127, (C, Mode.Major))
+val context: Context[NoteWithAttributes] = Context(0, DefaultPlayer, AcousticGrandPiano, Metronome.tickedWholeNote(96), 0, 127, 127, (C, Mode.Major), timeSignature, 120)
 ```
 
-The context define things like the starting speed, instrument, the player that will perform the music, and more.
+The context defines things like the starting tempo (in BPM), instrument, the player that will perform the music, volume, and more.
 
 You have to attach a context to each of your musics, defining the parts that make the music score:
 

@@ -25,10 +25,10 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perform(c, m) should equal(
       List(
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 173, toTicks(hn), 60, 40, List()),
-        MusicEvent(toTicks(dhn), AltoSax, 173, toTicks(qn), 60, 30, List()),
-        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 60, 50, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 173, toTicks(hn), 60, 40, List(), 120),
+        MusicEvent(toTicks(dhn), AltoSax, 173, toTicks(qn), 60, 30, List(), 120),
+        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 60, 50, List(), 120)
       )
     )
   }
@@ -42,10 +42,10 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 173, toTicks(hn), 60, 40, List()),
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(hn), AltoSax, 173, toTicks(hn), 60, 30, List()),
-        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 60, 50, List())
+        MusicEvent(0, AltoSax, 173, toTicks(hn), 60, 40, List(), 120),
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(hn), AltoSax, 173, toTicks(hn), 60, 30, List(), 120),
+        MusicEvent(toTicks(dhn), AltoSax, 197, toTicks(qn), 60, 50, List(), 120)
       ), toTicks(wn))
     )
   }
@@ -58,8 +58,8 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
@@ -72,8 +72,8 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 209, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AltoSax, 209, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
@@ -86,8 +86,8 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AcousticGrandPiano, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AcousticGrandPiano, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
@@ -100,8 +100,8 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
@@ -115,8 +115,8 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 120, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 120, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
@@ -129,64 +129,64 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
 
     perf(c, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List()),
-        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List())
+        MusicEvent(0, AltoSax, 197, toTicks(qn), 60, 60, List(), 120),
+        MusicEvent(toTicks(qn), AltoSax, 209, toTicks(qn), 60, 80, List(), 120)
       ), toTicks(hn))
     )
   }
 
   "merge" should "merge two performances of equal length" in {
     val p1: Performance = List(
-      MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty),
-      MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty),
-      MusicEvent(90, AltoSax, 75, 45, 60, 60, List.empty)
+      MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty, 120),
+      MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty, 120),
+      MusicEvent(90, AltoSax, 75, 45, 60, 60, List.empty, 120)
     )
     val p2: Performance = List(
-      MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty),
-      MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty),
-      MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty)
+      MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty, 120),
+      MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty, 120),
+      MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty, 120)
     )
 
     merge(p1, p2) should equal(
       List(
-        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty),
-        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(90, AltoSax, 75, 45, 60, 60, List.empty)
+        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty, 120),
+        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(90, AltoSax, 75, 45, 60, 60, List.empty, 120)
       )
     )
   }
 
   "merge" should "merge two performances of different length" in {
     val p1: Performance = List(
-      MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty),
-      MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty),
+      MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty, 120),
+      MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty, 120),
     )
     val p2: Performance = List(
-      MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty),
-      MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty),
-      MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty)
+      MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty, 120),
+      MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty, 120),
+      MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty, 120)
     )
 
     merge(p1, p2) should equal(
       List(
-        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty),
-        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty)
+        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty, 120),
+        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty, 120)
       )
     )
 
     merge(p2, p1) should equal(
       List(
-        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty),
-        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty),
-        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty)
+        MusicEvent(0, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(5, AltoSax, 75, 20, 60, 60, List.empty, 120),
+        MusicEvent(25, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(45, AltoSax, 75, 45, 60, 60, List.empty, 120),
+        MusicEvent(70, AltoSax, 75, 45, 60, 60, List.empty, 120)
       )
     )
 
@@ -195,7 +195,7 @@ class PerformanceSpec extends AnyFlatSpec with Matchers {
   private def buildContext(): Context[NoteWithAttributes] = {
     val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
     Context(
-      0, DefaultPlayer, AltoSax, 4 * PulsesPerQuarterNote, 125, 60, 60, (C, Major), timeSignature
+      0, DefaultPlayer, AltoSax, 4 * PulsesPerQuarterNote, 125, 60, 60, (C, Major), timeSignature, 120
     )
   }
 

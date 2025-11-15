@@ -12,6 +12,7 @@ import scalamusic.performance.Performance.{TickedDuration, TickedTime}
   * @param eDur    note duration in ticks
   * @param eVol    volume value 0-127
   * @param eParams optional other parameters
+  * @param eTempo  tempo in BPM (beats per minute)
   */
 case class MusicEvent(
     eTime: TickedTime,
@@ -20,5 +21,6 @@ case class MusicEvent(
     eDur: TickedDuration,
     eVel: Velocity,
     eVol: Volume,
-    eParams: List[Double]
+    eParams: List[Double],
+    eTempo: Int
 )

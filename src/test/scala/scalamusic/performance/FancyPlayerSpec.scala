@@ -20,7 +20,7 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
     val n: NoteWithAttributes = ((C, 5), List(Volume(60), Fingering(25), Dynamics("ppp"), Params(List(1.5, 2.0))))
 
     FancyPlayer.playNote(c, d, n) should equal(
-      List(MusicEvent(0, AltoSax, 197, qn, 60, 60, List(1.5, 2.0)))
+      List(MusicEvent(0, AltoSax, 197, qn, 60, 60, List(1.5, 2.0), 120))
     )
   }
 
@@ -32,8 +32,8 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 120, List(), 120)
       ), hn)
     )
   }
@@ -46,8 +46,8 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 40, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 40, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List(), 120)
       ), hn)
     )
   }
@@ -60,8 +60,8 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 40, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 40, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 40, List(), 120)
       ), hn)
     )
   }
@@ -74,9 +74,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 60, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 70, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 60, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 70, List(), 120),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List(), 120)
       ), dhn)
     )
   }
@@ -89,9 +89,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, qn, 60, 120, List()),
-        MusicEvent(qn, AltoSax, 197, qn, 60, 100, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List())
+        MusicEvent(0, AltoSax, 197, qn, 60, 120, List(), 120),
+        MusicEvent(qn, AltoSax, 197, qn, 60, 100, List(), 120),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 80, List(), 120)
       ), dhn)
     )
   }
@@ -104,9 +104,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 24), 60, 60, List()),
-        MusicEvent(Rational(7, 24), AltoSax, 197, Rational(3, 8), 60, 60, List()),
-        MusicEvent(Rational(2, 3), AltoSax, 197, Rational(11, 24), 60, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 24), 60, 60, List(), 120),
+        MusicEvent(Rational(7, 24), AltoSax, 197, Rational(3, 8), 60, 60, List(), 120),
+        MusicEvent(Rational(2, 3), AltoSax, 197, Rational(11, 24), 60, 60, List(), 120)
       ), 9*en)
     )
   }
@@ -119,9 +119,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(5, 24), 60, 60, List()),
-        MusicEvent(Rational(5, 24), AltoSax, 197, en, 60, 60, List()),
-        MusicEvent(Rational(1, 3), AltoSax, 197, Rational(1, 24), 60, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(5, 24), 60, 60, List(), 120),
+        MusicEvent(Rational(5, 24), AltoSax, 197, en, 60, 60, List(), 120),
+        MusicEvent(Rational(1, 3), AltoSax, 197, Rational(1, 24), 60, 60, List(), 120)
       ), 3*en)
     )
   }
@@ -134,9 +134,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(1, 6), 60, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List(), 120),
+        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List(), 120),
+        MusicEvent(hn, AltoSax, 197, Rational(1, 6), 60, 60, List(), 120)
       ), dhn)
     )
   }
@@ -149,9 +149,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 60, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 60, List(), 120),
+        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 60, List(), 120),
+        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 60, List(), 120)
       ), dhn)
     )
   }
@@ -164,9 +164,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List()),
-        MusicEvent(hn, AltoSax, 197, qn, 60, 60, List())
+        MusicEvent(0, AltoSax, 197, Rational(1, 6), 60, 60, List(), 120),
+        MusicEvent(qn, AltoSax, 197, Rational(1, 6), 60, 60, List(), 120),
+        MusicEvent(hn, AltoSax, 197, qn, 60, 60, List(), 120)
       ), dhn)
     )
   }
@@ -179,9 +179,9 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
 
     FancyPlayer.interpretPhrase(c, pas, m) should equal(
       (List(
-        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 120, List()),
-        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 120, List()),
-        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 120, List())
+        MusicEvent(0, AltoSax, 197, Rational(7, 20), 60, 120, List(), 120),
+        MusicEvent(qn, AltoSax, 197, Rational(7, 20), 60, 120, List(), 120),
+        MusicEvent(hn, AltoSax, 197, Rational(7, 20), 60, 120, List(), 120)
       ), dhn)
     )
   }
@@ -191,7 +191,7 @@ class FancyPlayerSpec extends AnyFlatSpec with Matchers {
                           ): Context[NoteWithAttributes] = {
     val timeSignature: TimeSignature = TimeSignature(NoPulse(), qn, 0)
     Context(
-      0, FancyPlayer, AltoSax, 1, 125, 60, cVol, (C, Major), timeSignature
+      0, FancyPlayer, AltoSax, 1, 125, 60, cVol, (C, Major), timeSignature, 120
     )
   }
 
