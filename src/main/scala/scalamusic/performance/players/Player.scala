@@ -61,7 +61,8 @@ object DefaultPlayer extends Player[NoteWithAttributes] {
       eDur = d * c.cDur,
       eVel = c.cVel,
       eVol = c.cVol,
-      eParams = List.empty
+      eParams = List.empty,
+      eTempo = c.cTempo
     )
     List(n._2.foldRight(initEv)(nasHandler(c)))
   }
@@ -199,7 +200,8 @@ object PulsePlayer extends Player[NoteWithAttributes] {
       eDur = d * c.cDur,
       eVel = c.cVel,
       eVol = pulsifiedVolume,
-      eParams = List.empty
+      eParams = List.empty,
+      eTempo = c.cTempo
     )
     List(n._2.foldRight(initEv)(nasHandler(c)))
   }

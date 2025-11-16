@@ -57,7 +57,6 @@ object MidiService {
         performancesToMidiEvents(performances).map { sequence =>
           sequencer.setSequence(sequence)
           sequencer.setTickPosition(0)
-          sequencer.setTempoInBPM(184) // TODO set it in the context
           sequencer.start()
 
           // Block until playback is complete
@@ -76,13 +75,23 @@ object MidiService {
   def performancesToMidiEvents(performances: List[Performance]): Try[Sequence] =
     Try(new Sequence(Sequence.PPQ, pulsesPerQuarterNote))
       .map { sequence =>
+        // Collect all tempo changes across all performances
+        val tempoChanges = collectTempoChanges(performances)
+
         for (i <- performances.indices) {
           val events: Seq[MidiEvent] = performances(i).flatMap(eventToMidiEvents(i, _))
           val track: Track           = sequence.createTrack()
+
+          // Add tempo changes to the first track only (MIDI convention)
+          if (i == 0) {
+            for ((tick, tempo) <- tempoChanges) {
+              createTempoChangeEvent(tempo, tick).foreach(track.add)
+            }
+          }
+
           for (ev <- events) {
             track.add(ev)
           }
-          // TODO let it be conditionally added
           // Add a meta event to indicate the end of the track.
           // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
           val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
@@ -106,37 +115,39 @@ object MidiService {
     val MIDI_VOLUME_CONTROLLER_CHANNEL     = 7
     val MIDI_EXPRESSION_CONTROLLER_CHANNEL = 11
 
-    val eventsList = event.eInst match {
-      case Percussion =>
-        val ev1 = createNoteOnEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, event.eTime.longValue)
-        val ev2 =
-          createNoteOffEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
-        List(ev1, ev2).sequence
-      case _ =>
-        val ev_prog = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
-        // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
-        // (This is the dynamic value updated by Loudness/Dynamics)
-        val ev_expr =
-          createControlChangeEvent(channel, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+    val (midiChannel, programChangeOpt) = event.eInst match {
+      case Percussion => (MIDI_PERCUSSION_CHANNEL, None)
+      case _          => (channel, Some(createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)))
+    }
 
-        val ev_note_on  = createNoteOnEvent(channel, event.ePitch, event.eVel, event.eTime.longValue)
-        val ev_note_off = createNoteOffEvent(channel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
+    // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
+    // (This is the dynamic value updated by Loudness/Dynamics)
+    val ev_expr =
+      createControlChangeEvent(midiChannel, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
 
-        // Initial Setup (Time 0): Set both CC 7 and CC 11
-        if (event.eTime == Rational.zero) {
-          // Set CC 7 (Main Volume) to the starting volume
-          val ev_cc7 =
-            createControlChangeEvent(channel, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
-          // the order ensures the MIDI messages are sent in the optimal sequence for reliable sound rendering,
-          // while correctly mapping the musical properties:
-          // - event.eInst.id => Program Change (Sets the instrument)
-          // - event.eVol => CC 7 (Main Volume) (Initial track mix level, Time 0 only)
-          // - event.eVol => CC 11 (Expression) (Dynamic updates from Loudness)
-          // - event.eVel => Note-On Velocity (Individual note dynamics/articulations)
-          List(ev_prog, ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        } else {
-          List(ev_prog, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        }
+    val ev_note_on  = createNoteOnEvent(midiChannel, event.ePitch, event.eVel, event.eTime.longValue)
+    val ev_note_off = createNoteOffEvent(midiChannel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
+
+    val eventsList = if (event.eTime == Rational.zero) {
+      // Initial Setup (Time 0): Set both CC 7 and CC 11
+      // Set CC 7 (Main Volume) to the starting volume
+      val ev_cc7 =
+        createControlChangeEvent(midiChannel, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+      // the order ensures the MIDI messages are sent in the optimal sequence for reliable sound rendering,
+      // while correctly mapping the musical properties:
+      // - event.eInst.id => Program Change (Sets the instrument, non-percussion only)
+      // - event.eVol => CC 7 (Main Volume) (Initial track mix level, Time 0 only)
+      // - event.eVol => CC 11 (Expression) (Dynamic updates from Loudness)
+      // - event.eVel => Note-On Velocity (Individual note dynamics/articulations)
+      programChangeOpt match {
+        case Some(ev_prog) => List(ev_prog, ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        case None          => List(ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence          // order matters!
+      }
+    } else {
+      programChangeOpt match {
+        case Some(ev_prog) => List(ev_prog, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        case None          => List(ev_expr, ev_note_on, ev_note_off).sequence          // order matters!
+      }
     }
     eventsList match {
       case Failure(exception) =>
@@ -197,6 +208,58 @@ object MidiService {
       val msg: ShortMessage = new ShortMessage(CONTROL_CHANGE, channel, controlNum, value)
       new MidiEvent(msg, tick)
     }
+
+  /** Create a Tempo Change meta event
+    *
+    * @param bpm  the tempo in beats per minute
+    * @param tick the time this event occurs
+    * @return the MidiEvent containing the tempo change
+    */
+  private def createTempoChangeEvent(bpm: Int, tick: Long): Try[MidiEvent] =
+    Try {
+      // MIDI tempo is specified in microseconds per quarter note
+      val microsecondsPerQuarterNote = (60000000.0 / bpm).toInt
+
+      // Convert to 3-byte big-endian format
+      val data = Array[Byte](
+        ((microsecondsPerQuarterNote >> 16) & 0xFF).toByte,
+        ((microsecondsPerQuarterNote >> 8) & 0xFF).toByte,
+        (microsecondsPerQuarterNote & 0xFF).toByte
+      )
+
+      val msg = new MetaMessage(0x51, data, 3) // 0x51 is the MIDI meta event type for tempo
+      new MidiEvent(msg, tick)
+    }
+
+  /** Collect all tempo changes from performances
+    *
+    * @param performances the list of performances
+    * @return a sorted list of (tick, tempo) pairs with duplicates removed
+    */
+  private def collectTempoChanges(performances: List[Performance]): List[(Long, Int)] = {
+    val tempoMap = scala.collection.mutable.Map[Long, Int]()
+
+    for {
+      performance <- performances
+      event <- performance
+    } {
+      val tick = event.eTime.longValue
+      val tempo = event.eTempo
+
+      // Only add if this tick doesn't have a tempo yet, or update if different
+      tempoMap.get(tick) match {
+        case Some(existingTempo) if existingTempo != tempo =>
+          // If there's a conflict, we could log a warning, but for now just keep the first one
+          ()
+        case None =>
+          tempoMap(tick) = tempo
+        case _ => ()
+      }
+    }
+
+    // Return sorted by tick
+    tempoMap.toList.sortBy(_._1)
+  }
 
   /** Init the Midi Service
     *
