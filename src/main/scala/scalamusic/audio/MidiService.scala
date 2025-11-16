@@ -116,50 +116,39 @@ object MidiService {
     val MIDI_VOLUME_CONTROLLER_CHANNEL     = 7
     val MIDI_EXPRESSION_CONTROLLER_CHANNEL = 11
 
-    val eventsList = event.eInst match {
-      case Percussion =>
-        // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
-        val ev_expr =
-          createControlChangeEvent(MIDI_PERCUSSION_CHANNEL, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+    val (midiChannel, programChangeOpt) = event.eInst match {
+      case Percussion => (MIDI_PERCUSSION_CHANNEL, None)
+      case _          => (channel, Some(createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)))
+    }
 
-        val ev_note_on = createNoteOnEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, event.eTime.longValue)
-        val ev_note_off =
-          createNoteOffEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
+    // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
+    // (This is the dynamic value updated by Loudness/Dynamics)
+    val ev_expr =
+      createControlChangeEvent(midiChannel, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
 
-        // Initial Setup (Time 0): Set both CC 7 and CC 11
-        if (event.eTime == Rational.zero) {
-          // Set CC 7 (Main Volume) to the starting volume
-          val ev_cc7 =
-            createControlChangeEvent(MIDI_PERCUSSION_CHANNEL, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
-          List(ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        } else {
-          List(ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        }
-      case _ =>
-        val ev_prog = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
-        // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
-        // (This is the dynamic value updated by Loudness/Dynamics)
-        val ev_expr =
-          createControlChangeEvent(channel, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+    val ev_note_on  = createNoteOnEvent(midiChannel, event.ePitch, event.eVel, event.eTime.longValue)
+    val ev_note_off = createNoteOffEvent(midiChannel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
 
-        val ev_note_on  = createNoteOnEvent(channel, event.ePitch, event.eVel, event.eTime.longValue)
-        val ev_note_off = createNoteOffEvent(channel, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
-
-        // Initial Setup (Time 0): Set both CC 7 and CC 11
-        if (event.eTime == Rational.zero) {
-          // Set CC 7 (Main Volume) to the starting volume
-          val ev_cc7 =
-            createControlChangeEvent(channel, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
-          // the order ensures the MIDI messages are sent in the optimal sequence for reliable sound rendering,
-          // while correctly mapping the musical properties:
-          // - event.eInst.id => Program Change (Sets the instrument)
-          // - event.eVol => CC 7 (Main Volume) (Initial track mix level, Time 0 only)
-          // - event.eVol => CC 11 (Expression) (Dynamic updates from Loudness)
-          // - event.eVel => Note-On Velocity (Individual note dynamics/articulations)
-          List(ev_prog, ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        } else {
-          List(ev_prog, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
-        }
+    val eventsList = if (event.eTime == Rational.zero) {
+      // Initial Setup (Time 0): Set both CC 7 and CC 11
+      // Set CC 7 (Main Volume) to the starting volume
+      val ev_cc7 =
+        createControlChangeEvent(midiChannel, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+      // the order ensures the MIDI messages are sent in the optimal sequence for reliable sound rendering,
+      // while correctly mapping the musical properties:
+      // - event.eInst.id => Program Change (Sets the instrument, non-percussion only)
+      // - event.eVol => CC 7 (Main Volume) (Initial track mix level, Time 0 only)
+      // - event.eVol => CC 11 (Expression) (Dynamic updates from Loudness)
+      // - event.eVel => Note-On Velocity (Individual note dynamics/articulations)
+      programChangeOpt match {
+        case Some(ev_prog) => List(ev_prog, ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        case None          => List(ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence          // order matters!
+      }
+    } else {
+      programChangeOpt match {
+        case Some(ev_prog) => List(ev_prog, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        case None          => List(ev_expr, ev_note_on, ev_note_off).sequence          // order matters!
+      }
     }
     eventsList match {
       case Failure(exception) =>
