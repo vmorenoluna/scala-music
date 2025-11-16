@@ -118,10 +118,23 @@ object MidiService {
 
     val eventsList = event.eInst match {
       case Percussion =>
-        val ev1 = createNoteOnEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, event.eTime.longValue)
-        val ev2 =
+        // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
+        val ev_expr =
+          createControlChangeEvent(MIDI_PERCUSSION_CHANNEL, MIDI_EXPRESSION_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+
+        val ev_note_on = createNoteOnEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, event.eTime.longValue)
+        val ev_note_off =
           createNoteOffEvent(MIDI_PERCUSSION_CHANNEL, event.ePitch, event.eVel, (event.eTime + event.eDur).longValue)
-        List(ev1, ev2).sequence
+
+        // Initial Setup (Time 0): Set both CC 7 and CC 11
+        if (event.eTime == Rational.zero) {
+          // Set CC 7 (Main Volume) to the starting volume
+          val ev_cc7 =
+            createControlChangeEvent(MIDI_PERCUSSION_CHANNEL, MIDI_VOLUME_CONTROLLER_CHANNEL, event.eVol, event.eTime.longValue)
+          List(ev_cc7, ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        } else {
+          List(ev_expr, ev_note_on, ev_note_off).sequence // order matters!
+        }
       case _ =>
         val ev_prog = createProgramChangeEvent(channel, event.eInst.id, event.eTime.longValue)
         // Dynamic Expression (Time >= 0): Always set CC 11 using eVol
