@@ -92,7 +92,6 @@ object MidiService {
           for (ev <- events) {
             track.add(ev)
           }
-          // TODO let it be conditionally added
           // Add a meta event to indicate the end of the track.
           // The track will end one whole note after the ticked length of the track, so the sound is allowed to fade.
           val msg = new MetaMessage(MidiUtils.META_END_OF_TRACK_TYPE, Array[Byte](0), 0)
