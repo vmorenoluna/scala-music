@@ -234,31 +234,38 @@ object MidiService {
   /** Collect all tempo changes from performances
     *
     * @param performances the list of performances
-    * @return a sorted list of (tick, tempo) pairs with duplicates removed
+    * @return a sorted list of (tick, tempo) pairs containing only actual tempo changes
     */
   private def collectTempoChanges(performances: List[Performance]): List[(Long, Int)] = {
-    val tempoMap = scala.collection.mutable.Map[Long, Int]()
-
-    for {
+    // Collect all (tick, tempo) pairs from all events
+    val allTempos = for {
       performance <- performances
       event <- performance
-    } {
-      val tick = event.eTime.longValue
-      val tempo = event.eTempo
+    } yield (event.eTime.longValue, event.eTempo)
 
-      // Only add if this tick doesn't have a tempo yet, or update if different
-      tempoMap.get(tick) match {
-        case Some(existingTempo) if existingTempo != tempo =>
-          // If there's a conflict, we could log a warning, but for now just keep the first one
-          ()
+    // Sort by tick
+    val sortedTempos = allTempos.sortBy(_._1)
+
+    // Keep only tempo changes (where tempo differs from previous)
+    val tempoChanges = scala.collection.mutable.ListBuffer[(Long, Int)]()
+    var lastTempo: Option[Int] = None
+
+    for ((tick, tempo) <- sortedTempos) {
+      lastTempo match {
         case None =>
-          tempoMap(tick) = tempo
-        case _ => ()
+          // First tempo event
+          tempoChanges += ((tick, tempo))
+          lastTempo = Some(tempo)
+        case Some(prevTempo) if prevTempo != tempo =>
+          // Tempo changed
+          tempoChanges += ((tick, tempo))
+          lastTempo = Some(tempo)
+        case _ =>
+        // Same tempo, skip
       }
     }
 
-    // Return sorted by tick
-    tempoMap.toList.sortBy(_._1)
+    tempoChanges.toList.distinct
   }
 
   /** Init the Midi Service
